@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0e27">
+    <meta name="description" content="Sistema profesional de diagnóstico automotriz con conexión Bluetooth ELM327, códigos DTC, diagramas y pinouts ECU">
+    <meta name="keywords" content="diagnóstico automotriz, ELM327, OBD2, scanner, códigos DTC, diagramas eléctricos, pinout ECU">
+    <meta name="author" content="Fernando Millán - PROPART DIAGNOSTIC">
+    
+    <title>PROPART DIAGNOSTIC PRO - Sistema Profesional de Diagnóstico</title>
+    
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/engine.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/engine.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+        
+        * { -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e2e8f0; 
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        .glass {
+            background: rgba(19, 24, 41, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .glow { box-shadow: 0 0 20px rgba(0,212,255,0.4), 0 0 40px rgba(0,212,255,0.2); }
+        
+        .header-pro {
+            background: linear-gradient(180deg, rgba(19,24,41,0.98) 0%, rgba(10,14,39,0.95) 100%);
+            border-bottom: 2px solid #06b6d4;
+            box-shadow: 0 4px 20px rgba(0,212,255,0.2);
+        }
+        
+        .btn-pro {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            border: 1px solid rgba(0,212,255,0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-pro:active { transform: scale(0.95); box-shadow: 0 0 25px rgba(0,212,255,0.6); }
+        
+        .card-sensor {
+            background: linear-gradient(135deg, rgba(30,58,138,0.3) 0%, rgba(30,64,175,0.2) 100%);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-left: 4px solid #06b6d4;
+        }
+        
+        .data-display {
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .hidden { display: none !important; }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: #1e293b;
+            color: #94a3b8;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(90deg, #06b6d4, #3b82f6);
+            color: white;
+        }
+        
+        input, select {
+            background: rgba(19,24,41,0.8);
+            border: 1px solid #334155;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            width: 100%;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6,182,212,0.3);
+        }
+        
+        .injector-bar {
+            height: 12px;
+            background: linear-gradient(90deg, #22c55e 0%, #eab308 50%, #ef4444 100%);
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header-pro p-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="showView('home')">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center glow">
+                <i class="fas fa-microchip text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="orbitron font-black text-base text-white">PROPART</h1>
+                <p class="text-[10px] text-cyan-400 font-bold tracking-widest">DIAGNOSTIC PRO</p>
+            </div>
+        </div>
+        <div class="flex gap-3 items-center">
+            <button id="bt-status" class="text-gray-500 transition">
+                <i class="fas fa-bluetooth text-2xl"></i>
+            </button>
+            <button onclick="toggleCart()" class="relative">
+                <i class="fas fa-shopping-cart text-white text-xl"></i>
+                <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="main-content" class="p-4 pb-24">
+
+        <!-- HOME -->
+        <div id="view-home">
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button onclick="showView('scanner')" class="btn-pro p-6 rounded-xl">
+                    <i class="fas fa-chart-line text-cyan-400 text-4xl mb-3"></i>
+                    <div class="text-xs font-bold text-white">DIAGNÓSTICO</div>
+                    <div class="text-[9px] text-gray-400">OBD2 EN VIVO</div>
+                </button>
+                <button onclick="showView('dtc')" class="btn-pro p-6 rounded-xl">
+                    <i class="fas fa-database text-yellow-400 text-4xl mb-3"></i>
+                    <div class="text-xs font-bold text-white">CÓDIGOS DTC</div>
+                    <div class="text-[9px] text-gray-400">50+ CÓDIGOS</div>
+                </button>
+                <button onclick="showView('wiring')" class="btn-pro p-6 rounded-xl">
+                    <i class="fas fa-bolt text-orange-400 text-4xl mb-3"></i>
+                    <div class="text-xs font-bold text-white">DIAGRAMAS</div>
+                    <div class="text-[9px] text-gray-400">CABLEADO</div>
+                </button>
+                <button onclick="showView('pinouts')" class="btn-pro p-6 rounded-xl">
+                    <i class="fas fa-microchip text-green-400 text-4xl mb-3"></i>
+                    <div class="text-xs font-bold text-white">PINOUTS ECU</div>
+                    <div class="text-[9px] text-gray-400">6 SISTEMAS</div>
+                </button>
+                <button onclick="showView('inventory')" class="btn-pro p-6 rounded-xl">
+                    <i class="fas fa-warehouse text-purple-400 text-4xl mb-3"></i>
+                    <div class="text-xs font-bold text-white">REFACCIONES</div>
+                    <div class="text-[9px] text-gray-400">INVENTARIO</div>
+                </button>
+                <button onclick="loginAdmin()" class="btn-pro p-6 rounded-xl">
+                    <i class="fas fa-user-gear text-red-400 text-4xl mb-3"></i>
+                    <div class="text-xs font-bold text-white">ADMIN</div>
+                    <div class="text-[9px] text-gray-400">GESTIÓN</div>
+                </button>
+            </div>
+
+            <div class="glass rounded-xl p-4 border border-cyan-500/30">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <h3 class="text-cyan-400 font-bold text-sm">SISTEMA ACTIVO</h3>
+                </div>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">PROPIETARIO:</span>
+                        <span class="text-white font-bold">FERNANDO MILLÁN</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">TELÉFONO:</span>
+                        <span class="text-cyan-400 font-mono">777-683-8196</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">WHATSAPP:</span>
+                        <a href="https://wa.me/527776838196" class="text-green-400 font-bold">CONTACTAR</a>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">VERSIÓN:</span>
+                        <span class="text-cyan-400">v1.0.0 PRO</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCANNER -->
+        <div id="view-scanner" class="hidden">
+            <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+                <button class="tab-btn active" onclick="switchTab('live')">EN VIVO</button>
+                <button class="tab-btn" onclick="switchTab('injectors')">INYECTORES</button>
+                <button class="tab-btn" onclick="switchTab('coils')">BOBINAS</button>
+                <button class="tab-btn" onclick="switchTab('diesel')">DIESEL</button>
+            </div>
+
+            <div class="glass rounded-xl p-4 mb-4 border border-cyan-500/30">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold text-xs flex items-center gap-2">
+                        <i class="fas fa-wifi text-cyan-400"></i> INTERFAZ ELM327
+                    </h3>
+                    <span id="conn-status" class="text-[9px] px-3 py-1 rounded-full bg-red-900 text-red-200 font-bold">DESCONECTADO</span>
+                </div>
+                <button onclick="toggleBluetooth()" id="btn-connect" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 py-3 rounded-lg font-bold text-xs glow">
+                    <i class="fab fa-bluetooth mr-2"></i>CONECTAR BLUETOOTH ELM327
+                </button>
+                <div class="mt-3 bg-blue-900/20 border border-blue-500/30 rounded p-3 text-xs text-blue-300">
+                    <div class="font-bold mb-2">📱 INSTRUCCIONES RÁPIDAS:</div>
+                    <div class="space-y-1 text-[10px]">
+                        <div>1️⃣ Conectar ELM327 al OBD2 del vehículo</div>
+                        <div>2️⃣ Encender ignición (motor ON o OFF)</div>
+                        <div>3️⃣ LED del ELM327 parpadeando</div>
+                        <div>4️⃣ Click "CONECTAR BLUETOOTH"</div>
+                        <div>5️⃣ Seleccionar tu ELM327</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-live">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-tachometer-alt"></i> RPM
+                        </div>
+                        <div id="val-rpm" class="data-display text-cyan-400 orbitron">0</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-temperature-high"></i> TEMP ECT
+                        </div>
+                        <div id="val-temp" class="data-display text-orange-400 orbitron">0°C</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-wind"></i> MAF
+                        </div>
+                        <div id="val-maf" class="data-display text-green-400 orbitron">0.0</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-gauge"></i> MAP
+                        </div>
+                        <div id="val-map" class="data-display text-yellow-400 orbitron">0</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-sliders"></i> TPS %
+                        </div>
+                        <div id="val-tps" class="data-display text-purple-400 orbitron">0</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-battery-three-quarters"></i> VOLTAJE
+                        </div>
+                        <div id="val-volt" class="data-display text-blue-400 orbitron">0.0V</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-thermometer-half"></i> IAT
+                        </div>
+                        <div id="val-iat" class="data-display text-amber-400 orbitron">0°C</div>
+                    </div>
+                    <div class="card-sensor p-3 rounded-xl">
+                        <div class="text-[9px] text-gray-400 mb-1 font-bold flex items-center gap-1">
+                            <i class="fas fa-smog"></i> O2
+                        </div>
+                        <div id="val-o2" class="data-display text-lime-400 orbitron">0.00V</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-injectors" class="hidden">
+                <div class="glass rounded-xl p-4 border border-cyan-500/30">
+                    <h3 class="text-cyan-400 font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-tint"></i> MONITOR INYECTORES (Ancho de Pulso)
+                    </h3>
+                    <div class="space-y-3">
+                        <div id="inj-1">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-bold">INYECTOR 1</span>
+                                <span class="text-green-400 font-mono font-bold">0.00 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-3">
+                                <div class="injector-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="inj-2">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-bold">INYECTOR 2</span>
+                                <span class="text-green-400 font-mono font-bold">0.00 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-3">
+                                <div class="injector-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="inj-3">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-bold">INYECTOR 3</span>
+                                <span class="text-green-400 font-mono font-bold">0.00 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-3">
+                                <div class="injector-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div id="inj-4">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-bold">INYECTOR 4</span>
+                                <span class="text-green-400 font-mono font-bold">0.00 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-3">
+                                <div class="injector-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-blue-900/20 border border-blue-500/30 rounded p-3 text-xs text-blue-300">
+                        <strong>💡 REFERENCIA:</strong> Normal en ralentí: 2-4ms | Aceleración: 4-8ms
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-coils" class="hidden">
+                <div class="glass rounded-xl p-4 border border-cyan-500/30">
+                    <h3 class="text-cyan-400 font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-bolt"></i> ESTADO BOBINAS
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div id="coil-1" class="p-4 rounded-xl text-center bg-gray-800/50 border border-gray-700">
+                            <div class="font-bold text-sm mb-2">BOBINA 1</div>
+                            <div class="text-4xl mb-1 text-gray-600">●</div>
+                            <div class="text-xs text-gray-500">INACTIVA</div>
+                        </div>
+                        <div id="coil-2" class="p-4 rounded-xl text-center bg-gray-800/50 border border-gray-700">
+                            <div class="font-bold text-sm mb-2">BOBINA 2</div>
+                            <div class="text-4xl mb-1 text-gray-600">●</div>
+                            <div class="text-xs text-gray-500">INACTIVA</div>
+                        </div>
+                        <div id="coil-3" class="p-4 rounded-xl text-center bg-gray-800/50 border border-gray-700">
+                            <div class="font-bold text-sm mb-2">BOBINA 3</div>
+                            <div class="text-4xl mb-1 text-gray-600">●</div>
+                            <div class="text-xs text-gray-500">INACTIVA</div>
+                        </div>
+                        <div id="coil-4" class="p-4 rounded-xl text-center bg-gray-800/50 border border-gray-700">
+                            <div class="font-bold text-sm mb-2">BOBINA 4</div>
+                            <div class="text-4xl mb-1 text-gray-600">●</div>
+                            <div class="text-xs text-gray-500">INACTIVA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-diesel" class="hidden">
+                <div class="glass rounded-xl p-4 border border-cyan-500/30 mb-3">
+                    <h3 class="text-cyan-400 font-bold mb-3">COMMON RAIL</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 bg-slate-800 rounded">
+                            <div class="text-[9px] text-gray-400 mb-1">PRESIÓN RIEL</div>
+                            <div id="val-rail" class="text-2xl font-black text-green-400 orbitron">0 bar</div>
+                        </div>
+                        <div class="p-3 bg-slate-800 rounded">
+                            <div class="text-[9px] text-gray-400 mb-1">EGR %</div>
+                            <div id="val-egr" class="text-2xl font-black text-yellow-400 orbitron">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OTRAS VISTAS -->
+        <div id="view-dtc" class="hidden">
+            <div class="glass rounded-xl p-4 border border-cyan-500/30 mb-4">
+                <h2 class="text-cyan-400 font-bold text-lg mb-4">ESCANEAR CÓDIGOS DTC</h2>
+                <button onclick="alert('Función de escaneo DTC\nConectado a ELM327 en tiempo real')" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 py-4 rounded-xl font-bold">
+                    <i class="fas fa-search mr-2"></i>BUSCAR CÓDIGOS
+                </button>
+            </div>
+            <div class="bg-blue-900/20 border border-blue-500/30 rounded p-4 text-xs text-blue-300">
+                <strong>ℹ️ BASE DE DATOS:</strong> 50+ códigos DTC con diagnóstico completo, causas probables, reparación paso a paso y costos estimados.
+            </div>
+        </div>
+
+        <div id="view-wiring" class="hidden">
+            <h2 class="text-cyan-400 font-bold text-lg mb-4">DIAGRAMAS DE CABLEADO</h2>
+            <div class="space-y-3">
+                <div class="glass p-4 rounded-xl border border-orange-500/30">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-bolt text-orange-400 text-2xl"></i>
+                        <div>
+                            <div class="text-white font-bold text-sm">VW JETTA A4 2.0L</div>
+                            <div class="text-xs text-gray-400">Sistema completo de encendido e inyección</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-xl border border-orange-500/30">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-bolt text-orange-400 text-2xl"></i>
+                        <div>
+                            <div class="text-white font-bold text-sm">NISSAN TSURU III 1.6L</div>
+                            <div class="text-xs text-gray-400">Diagrama eléctrico GA16DE</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-xl border border-orange-500/30">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-bolt text-orange-400 text-2xl"></i>
+                        <div>
+                            <div class="text-white font-bold text-sm">DIESEL COMMON RAIL</div>
+                            <div class="text-xs text-gray-400">Sistema completo riel común</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-pinouts" class="hidden">
+            <h2 class="text-cyan-400 font-bold text-lg mb-4">PINOUTS ECU/PCM/ECM</h2>
+            <div class="space-y-3">
+                <div class="glass p-4 rounded-xl border border-green-500/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-microchip text-green-400 text-2xl"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm">VW BOSCH ME7.5</div>
+                                <div class="text-xs text-gray-400">121 PINES</div>
+                            </div>
+                        </div>
+                        <div class="text-cyan-400 text-xs">VER →</div>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-xl border border-green-500/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-microchip text-green-400 text-2xl"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm">NISSAN ECCS</div>
+                                <div class="text-xs text-gray-400">76 PINES</div>
+                            </div>
+                        </div>
+                        <div class="text-cyan-400 text-xs">VER →</div>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-xl border border-green-500/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-microchip text-green-400 text-2xl"></i>
+                            <div>
+                                <div class="text-white font-bold text-sm">FORD EEC-V</div>
+                                <div class="text-xs text-gray-400">104 PINES</div>
+                            </div>
+                        </div>
+                        <div class="text-cyan-400 text-xs">VER →</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-inventory" class="hidden">
+            <input type="text" id="search-inv" placeholder="🔍 Buscar refacciones..." class="mb-4">
+            <div id="inventory-list" class="space-y-2">
+                <div class="glass rounded-xl p-4 border border-cyan-500/20">
+                    <div class="flex justify-between">
+                        <div class="flex-1">
+                            <div class="text-[9px] text-cyan-400 font-bold">BOBINAS</div>
+                            <div class="font-bold text-sm text-white">BOBINA JETTA A4 2.0L</div>
+                            <div class="text-[10px] text-gray</div>
