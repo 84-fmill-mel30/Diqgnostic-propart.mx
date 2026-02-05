@@ -1,147 +1,228 @@
-
+<!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROPART V32.7 | MASTER RECOVERY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <title>PROPART MASTER V5 | VOLTAGE MASTER</title>
+    <!-- Librerías de Socio Premium -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        :root { --blue: #00f3ff; --purple: #bc13fe; --dark: #000; --green: #0f0; --red: #ff0055; --gold: #ffcc00; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark); color: white; font-family: 'Roboto Mono', monospace; margin: 0; padding-bottom: 90px; overflow-x: hidden; }
-        .top-bar { background: #111; padding: 15px; border-bottom: 2px solid var(--blue); text-align: center; box-shadow: 0 0 15px var(--blue); position: sticky; top: 0; z-index: 1001; }
-        .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease-out; }
-        .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card { background: #111; border: 1px solid #333; border-left: 4px solid var(--purple); padding: 15px; margin-top: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .btn { background: var(--blue); color: #000; border: none; padding: 16px; width: 100%; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .btn-scan { background: var(--green); display: none; margin-top: 20px; box-shadow: 0 0 20px var(--green); }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 2px solid var(--purple); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #555; font-size: 0.65rem; text-align: center; flex: 1; font-family: 'Orbitron'; cursor: pointer; }
-        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
-        input { width: 100%; padding: 15px; background: #050505; color: var(--blue); border: 1px solid var(--blue); font-family: 'Orbitron'; text-align: center; font-size: 1.2rem; border-radius: 8px; margin-top: 10px; }
-        .bar-container { width: 100%; background: #222; height: 12px; border-radius: 6px; margin-top: 15px; display: none; overflow: hidden; }
-        #bar { width: 0%; background: var(--green); height: 100%; transition: 0.3s; }
+        :root { --neon-blue: #3b82f6; --neon-amber: #fbbf24; --bg: #020617; }
+        body { background-color: var(--bg); color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; margin: 0; }
+        
+        .glass { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.5rem; }
+        .active-tab { background: rgba(59, 130, 246, 0.2); border-bottom: 3px solid var(--neon-blue); color: var(--neon-blue); }
+        
+        #pinout-viewport { width: 100%; height: 350px; cursor: grab; background: radial-gradient(circle at center, rgba(251, 191, 36, 0.1) 0%, transparent 80%); touch-action: none; border-radius: 1.5rem; }
+        
+        .pin-label { position: absolute; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; pointer-events: none; }
+        .vcc { background: var(--neon-amber); color: black; box-shadow: 0 0 10px var(--neon-amber); }
+        .gnd { background: var(--neon-blue); color: white; box-shadow: 0 0 10px var(--neon-blue); }
+        
+        .terminal-bg { background: rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; font-family: 'Consolas', monospace; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="flex flex-col select-none">
 
-    <div class="top-bar">
-        <div id="mainStatus" style="font-family:'Orbitron'; color:var(--blue); font-weight: 900;">PROPART V32.7 MASTER</div>
-    </div>
-
-    <div id="scan" class="screen active">
-        <button class="btn" id="btnConnect" onclick="conectarBT()">🔗 VINCULAR ESCÁNER Bluetooth</button>
-        <button class="btn btn-scan" id="btnStartScan" onclick="leerECU()">🚀 INICIAR BARRIDO TOTAL</button>
-
-        <div id="scanProgress" class="bar-container">
-            <div id="bar"></div>
-        </div>
-        <p id="scanText" style="text-align:center; font-size:0.7rem; color:var(--blue); margin-top:5px; display:none;">Analizando protocolos...</p>
-
-        <div class="card" style="border-left-color: var(--blue);">
-            <h3 style="margin:0; font-family:'Orbitron'; font-size: 0.8rem;">REVISIÓN MANUAL DTC</h3>
-            <input type="text" id="dtcInput" placeholder="P0000">
-            <button class="btn" onclick="buscarFull()">ANALIZAR CÓDIGO</button>
-        </div>
-
-        <div id="resBox" style="display:none;">
-            <div class="card" style="border-left-color: var(--green);">
-                <h4 id="rNom" style="color:var(--blue); margin:0; font-family:'Orbitron';"></h4>
-                <div style="background: #1a1a1a; padding: 12px; border: 1px solid var(--green); border-radius: 5px; margin-top:10px;">
-                    <b style="color:var(--green); font-size: 0.75rem;">SOLUCIÓN TÉCNICA:</b><br>
-                    <span id="rSol" style="font-size:0.85rem;"></span>
-                </div>
+    <!-- Header de Ingeniería -->
+    <header class="glass mx-3 mt-3 p-4 flex flex-col items-center sticky top-0 z-50">
+        <div class="flex items-center gap-4 w-full justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-amber-500 rounded-lg shadow-lg font-black text-black text-[10px] uppercase">VOLTAGE MASTER</div>
+                <h1 class="text-xl font-black tracking-tighter uppercase italic">Master <span class="text-amber-500">Hub V5</span></h1>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-900 px-3 py-1 rounded-full border border-white/10">
+                <div id="bt-led" class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
+                <span id="bt-status" class="text-[9px] font-bold text-slate-500 uppercase italic">Scanner Offline</span>
             </div>
         </div>
-    </div>
+        
+        <nav class="flex mt-4 bg-slate-900/80 p-1 rounded-2xl border border-white/5 w-full max-w-md gap-1">
+            <button onclick="switchTab('pinout')" id="tab-pinout-btn" class="tab-btn py-2 text-[10px] font-black uppercase rounded-xl flex-1 active-tab italic">Mapa de Pines</button>
+            <button onclick="switchTab('diag')" id="tab-diag-btn" class="tab-btn py-2 text-[10px] font-black uppercase rounded-xl flex-1 text-slate-500 italic">Diagnóstico</button>
+        </nav>
+    </header>
 
-    <div id="data" class="screen">
-        <h3 style="color:var(--blue); font-family:'Orbitron';">GOLF DATA (PINOUTS)</h3>
-        <div class="card">
-            <b style="color:var(--red);">INYECTORES:</b><br>
-            • Rojo/Negro: +12V Constante<br>
-            • Otros colores: Pulsos de Tierra (ECU)<br>
-            • Resistencia: 12-16 Ohms
-        </div>
-        <div class="card" style="border-left-color: var(--gold);">
-            <b style="color:var(--gold);">ECU PINS:</b><br>
-            • Pin 1-2: Masa (-) | Pin 3: +12V Bat<br>
-            • Pin 62: +12V Ign | Pin 43: K-Line
-        </div>
-    </div>
+    <main class="flex-grow overflow-y-auto custom-scroll p-4 space-y-6">
 
-    <nav class="nav">
-        <div class="nav-item active" onclick="tab('scan', this)">SCANNER</div>
-        <div class="nav-item" onclick="tab('data', this)">GOLF DATA</div>
-        <div class="nav-item" onclick="window.location.href='https://wa.me/527776838196'">SOPORTE AI</div>
-    </nav>
+        <!-- SECCIÓN 1: MAPA DE PINES (Holograma de Referencia) -->
+        <section id="content-pinout" class="tab-content block space-y-4">
+            <div class="flex justify-between items-center px-2">
+                <h2 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Referencia Física OBD-II</h2>
+                <span class="text-[10px] text-amber-500 font-bold uppercase animate-pulse">Check Pin 16</span>
+            </div>
+
+            <!-- Visor 3D del Conector -->
+            <div class="glass overflow-hidden relative border border-amber-500/20 shadow-2xl">
+                <div id="pinout-viewport"></div>
+                
+                <!-- Etiquetas de Referencia -->
+                <div class="absolute top-4 left-4 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-amber-500 rounded-sm"></div>
+                        <span class="text-[10px] font-bold text-amber-500 uppercase italic">Pin 16: Batería (+12V)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-blue-500 rounded-sm"></div>
+                        <span class="text-[10px] font-bold text-blue-400 uppercase italic">Pin 4/5: Tierras (GND)</span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-6 left-0 right-0 text-center pointer-events-none">
+                    <p class="text-sm font-black text-white uppercase tracking-[0.4em] drop-shadow-lg italic">Diagrama de Banqueo</p>
+                    <p class="text-[9px] text-slate-400 mt-1 uppercase font-bold tracking-widest italic">Rota el conector para ver las patitas</p>
+                </div>
+            </div>
+
+            <!-- Tabla de Referencia Rápida -->
+            <div class="grid grid-cols-1 gap-3">
+                <div class="glass p-5 border-l-4 border-amber-500 flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-xs uppercase text-amber-500 italic">Pin 16: Alimentación</h4>
+                        <p class="text-[10px] text-slate-400 mt-1 uppercase">Lleva corriente directa de batería.</p>
+                    </div>
+                    <div class="px-3 py-1 bg-amber-500/10 rounded font-black text-amber-500 text-xs tracking-tighter italic">POSITIVO</div>
+                </div>
+                <div class="glass p-5 border-l-4 border-blue-500 flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-xs uppercase text-blue-400 italic">Pin 4 & 5: Tierras</h4>
+                        <p class="text-[10px] text-slate-400 mt-1 uppercase">Pin 4 Chasis / Pin 5 Señal.</p>
+                    </div>
+                    <div class="px-3 py-1 bg-blue-500/10 rounded font-black text-blue-400 text-xs tracking-tighter italic">NEGATIVO</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: DIAGNÓSTICO (Consola para el Golf) -->
+        <section id="content-diag" class="tab-content hidden space-y-4">
+            <div class="glass p-6 border border-white/5 text-center">
+                <h3 class="text-xs font-black text-blue-400 uppercase tracking-widest mb-4">Enlace vLink para Golf 2005</h3>
+                <button onclick="conectar()" id="syncBtn" class="w-full py-4 bg-blue-600 rounded-2xl font-black text-xs uppercase shadow-lg shadow-blue-900/40 active:scale-95 transition-all">Sincronizar Bluetooth</button>
+            </div>
+
+            <!-- Terminal de Datos HEX -->
+            <div class="terminal-bg p-5 flex flex-col h-80 overflow-hidden border border-white/5">
+                <div class="flex justify-between items-center mb-3 border-b border-white/10 pb-2">
+                    <span class="text-[10px] font-black text-blue-400 uppercase italic">Propart Data Terminal</span>
+                    <button onclick="document.getElementById('console').innerHTML = ''" class="text-[9px] text-slate-500 font-bold uppercase">Limpiar</button>
+                </div>
+                <div id="console" class="flex-grow font-mono text-[10px] text-blue-300 overflow-y-auto custom-scroll space-y-1">
+                    <div class="text-slate-600 italic font-bold uppercase">> Sistema listo. Verifica voltajes en Pin 16 y 4.</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Barra de Comandos Millán -->
+    <footer class="p-4 glass border-t border-white/5 sticky bottom-0 mx-3 mb-3">
+        <div class="flex gap-2 max-w-3xl mx-auto">
+            <input type="text" id="cmdInput" placeholder="CMD AT/HEX..." class="flex-grow bg-slate-950 border border-slate-700 rounded-2xl px-5 py-3.5 text-white text-xs outline-none focus:ring-1 focus:ring-blue-500 transition-all font-bold uppercase placeholder:text-slate-700 italic">
+            <button onclick="enviarManual()" class="bg-blue-600 px-7 rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
+                <i class="fas fa-paper-plane text-white text-sm"></i>
+            </button>
+        </div>
+        <p class="text-center text-[7px] font-bold text-slate-700 uppercase tracking-[0.5em] mt-5 italic">SOCIO JULS | PROPART DIAGNOSTIC MASTER</p>
+    </footer>
 
     <script>
-        function tab(id, el) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-        }
+        // --- MOTOR 3D DE PINOUT ---
+        let scene, camera, renderer, connector;
+        function init3D() {
+            const viewport = document.getElementById('pinout-viewport');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, viewport.clientWidth / viewport.clientHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            viewport.appendChild(renderer.domElement);
 
-        async function conectarBT() {
-            try {
-                const device = await navigator.bluetooth.requestDevice({ 
-                    acceptAllDevices: true, 
-                    optionalServices: ['00001101-0000-1000-8000-00805f9b34fb'] 
-                });
-                await device.gatt.connect();
-                alert("✅ CONEXIÓN EXITOSA");
-                document.getElementById('btnStartScan').style.display = 'block';
-                document.getElementById('btnConnect').style.display = 'none';
-                document.getElementById('mainStatus').style.color = "var(--green)";
-            } catch (err) { alert("Activa Bluetooth y GPS, carnal."); }
-        }
+            // Luz técnica
+            const light = new THREE.DirectionalLight(0xffffff, 2);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0x404040, 2));
 
-        function leerECU() {
-            const bar = document.getElementById('bar');
-            const cont = document.getElementById('scanProgress');
-            const text = document.getElementById('scanText');
-            cont.style.display = 'block';
-            text.style.display = 'block';
+            // Geometría del conector OBDII (Trapecio simplificado)
+            const geometry = new THREE.BoxGeometry(4, 2, 1);
+            const material = new THREE.MeshPhongMaterial({ color: 0x1e293b, wireframe: true, transparent: true, opacity: 0.8 });
+            connector = new THREE.Mesh(geometry, material);
+            scene.add(connector);
+
+            // Representación de los Pines Clave
+            const pinGeo = new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8);
             
-            let p = 0;
-            let interval = setInterval(() => {
-                p += 2;
-                bar.style.width = p + "%";
-                if(p == 30) text.innerText = "Accediendo a Memoria de Averías...";
-                if(p == 60) text.innerText = "Buscando códigos intermitentes...";
-                if(p == 90) text.innerText = "Finalizando reporte...";
+            // Pin 16 (Positivo - Abajo Derecha)
+            const vccPin = new THREE.Mesh(pinGeo, new THREE.MeshBasicMaterial({ color: 0xfbbf24 }));
+            vccPin.position.set(1.5, -0.7, 0);
+            vccPin.rotation.x = Math.PI / 2;
+            connector.add(vccPin);
 
-                if(p >= 100) {
-                    clearInterval(interval);
-                    alert("⚠️ ESCANEO COMPLETO\nCódigos: P0300, P0171, P0507");
-                    document.getElementById('dtcInput').value = "P0171";
-                    buscarFull();
+            // Pin 4 (Tierra - Arriba Izquierda-Centro)
+            const gndPin = new THREE.Mesh(pinGeo, new THREE.MeshBasicMaterial({ color: 0x3b82f6 }));
+            gndPin.position.set(-0.8, 0.7, 0);
+            gndPin.rotation.x = Math.PI / 2;
+            connector.add(gndPin);
+
+            camera.position.z = 5;
+
+            // Movimiento
+            viewport.addEventListener('mousemove', (e) => {
+                if (connector) {
+                    connector.rotation.y += e.movementX * 0.01;
+                    connector.rotation.x += e.movementY * 0.01;
                 }
-            }, 80);
+            });
+            animate();
         }
 
-        const dataMaster = {
-            "P0300": "Falla de encendido múltiple. Revisar bobinas, bujías y presión de gasolina.",
-            "P0171": "Sistema Pobre (Lean): Fuga de aire en admisión o sensor MAF sucio/fallando.",
-            "P0507": "Marcha mínima alta: Limpiar cuerpo de aceleración y recalibrar.",
-            "P0335": "Sensor de Cigüeñal: Revisar cableado, el coche se apaga o no arranca."
-        };
+        function animate() {
+            requestAnimationFrame(animate);
+            if (connector) connector.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
 
-        function buscarFull() {
-            const c = document.getElementById('dtcInput').value.toUpperCase().trim();
-            const res = document.getElementById('resBox');
-            if(dataMaster[c]) {
-                res.style.display = 'block';
-                document.getElementById('rNom').innerText = "RESULTADO: " + c;
-                document.getElementById('rSol').innerText = dataMaster[c];
-            } else if (c !== "") {
-                window.location.href = "https://wa.me/527776838196?text=Socio, codigo detectado: " + c;
+        // --- MOTOR BLUETOOTH ---
+        let char = null;
+        async function conectar() {
+            try {
+                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['0000fff0-0000-1000-8000-00805f9b34fb'] });
+                const server = await device.gatt.connect();
+                const services = await server.getPrimaryServices();
+                for (const s of services) {
+                    const chars = await s.getCharacteristics();
+                    for (const c of chars) { if (c.properties.write || c.properties.notify) { char = c; break; } }
+                    if (char) break;
+                }
+                document.getElementById('bt-led').className = "w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_12px_#3b82f6]";
+                document.getElementById('bt-status').innerText = "V-LINK ONLINE";
+                document.getElementById('console').innerHTML += `<div><span class="text-blue-500 font-bold uppercase">> Conectado a ${device.name}</span></div>`;
+            } catch (e) { alert("Error socio: " + e.message); }
+        }
+
+        function enviarManual() {
+            const input = document.getElementById('cmdInput');
+            if(input.value) {
+                document.getElementById('console').innerHTML += `<div><span class="text-white font-bold uppercase">> TX: ${input.value}</span></div>`;
+                input.value = "";
             }
         }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active-tab'); b.classList.add('text-slate-500'); });
+            document.getElementById(`content-${id}`).classList.remove('hidden');
+            document.getElementById(`tab-${id}-btn`).classList.add('active-tab');
+            document.getElementById(`tab-${id}-btn`).classList.remove('text-slate-500');
+        }
+
+        window.onload = init3D;
     </script>
 </body>
 </html>
