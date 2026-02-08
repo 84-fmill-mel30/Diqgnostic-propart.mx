@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V104 - TRIAL</title>
+    <title>PROPART V105 - MASTER</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { background: #050505; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 70px; overflow-x: hidden; }
@@ -14,7 +14,6 @@
             flex-direction: column; justify-content: center; align-items: center; padding: 20px;
         }
         #lockScreen h1 { color: #f00; font-size: 40px; margin-bottom: 10px; }
-        #lockScreen p { color: #fff; font-size: 18px; }
         .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-size: 18px; font-weight: bold; margin-top: 20px; text-decoration: none; display: inline-block; }
 
         /* NAVEGACIÓN */
@@ -32,46 +31,48 @@
         .legal-box { border: 2px solid #f00; padding: 20px; border-radius: 10px; background: #100; box-shadow: 0 0 30px #f00; max-height: 80vh; overflow-y: auto; text-align: justify; }
         #btnAccept { background: #f00; color: #fff; border: none; padding: 15px; width: 100%; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; border-radius: 5px; }
 
-        /* GENERALES */
+        /* ESTILOS GENERALES */
         .gauge-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
         .gauge { width: 130px; height: 130px; border: 3px solid #0f0; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; box-shadow: 0 0 15px #0f0 inset; }
+        .gauge h1 { margin: 0; font-size: 35px; }
         canvas { width: 100%; height: 120px; background: #111; border: 1px solid #333; margin-top: 20px; }
+
+        /* BOTONES */
+        .btn-action { background: #0f0; color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 50px; font-size: 18px; margin-top: 20px; box-shadow: 0 0 20px #0f0; width: 80%; cursor: pointer; }
+        .btn-dtc { background: #f00; color: #fff; display: none; margin: 10px auto; box-shadow: 0 0 20px #f00; }
+        #dtcResult { color: #f55; margin-top: 10px; border: 1px solid #500; padding: 10px; display: none; font-weight: bold; background: #100; }
+
+        /* OTROS */
         .search-bar { width: 90%; padding: 12px; background: #111; border: 1px solid #0f0; color: #fff; border-radius: 5px; font-size: 16px; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; margin-top: 5px; }
         th { background: #0f0; color: #000; padding: 8px; font-weight: bold; }
         td { border-bottom: 1px solid #333; padding: 10px 5px; }
-        .btn-action { background: #0f0; color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 50px; font-size: 18px; margin-top: 20px; box-shadow: 0 0 20px #0f0; width: 80%; }
+        .money { color: #ff0; text-align: right; font-weight: bold; }
+        .diag-card { border: 1px solid #333; background: #111; margin-bottom: 10px; padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .btn-view { background: #0f0; color: #000; border: none; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .assistant-box { background: #111; border: 1px solid #0ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 10px #0ff3; }
         
         /* VISOR */
         #imgModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
         #imgModal img { max-width: 95%; max-height: 80%; border: 2px solid #0f0; }
         #closeModal { margin-top: 20px; padding: 10px 30px; background: #f00; color: #fff; border: none; font-size: 18px; border-radius: 5px; }
-        
-        /* DIAGRAMAS Y ASISTENTE */
-        .diag-card { border: 1px solid #333; background: #111; margin-bottom: 10px; padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
-        .btn-view { background: #0f0; color: #000; border: none; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .assistant-box { background: #111; border: 1px solid #0ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 10px #0ff3; }
     </style>
 </head>
 <body>
 
     <div id="lockScreen">
         <h1>🔒 BLOQUEADO</h1>
-        <p>TU LICENCIA DE PRUEBA HA EXPIRADO.</p>
-        <p style="font-size:14px; color:#aaa; margin-top:20px;">Para seguir usando la base de datos, gráficas y diagramas, contacta al administrador.</p>
-        
-        <a href="https://wa.me/521XXXXXXXXXX?text=Hola, quiero renovar mi licencia PROPART" class="btn-whatsapp">
-            📲 RENOVAR AHORA
-        </a>
+        <p>LICENCIA VENCIDA</p>
+        <p style="font-size:14px; color:#aaa; margin-top:20px;">Contacta a PROPART para renovar.</p>
+        <a href="https://wa.me/521777XXXXXXX?text=Hola, quiero renovar" class="btn-whatsapp">📲 RENOVAR</a>
     </div>
 
     <div id="legalModal">
         <div class="legal-box">
             <h2 style="color:#f00;">⚠️ AVISO LEGAL</h2>
-            <p><strong>TÉRMINOS DE USO:</strong></p>
             <p>1. App de REFERENCIA TÉCNICA.</p>
-            <p>2. El desarrollador NO se hace responsable por daños.</p>
-            <p>3. Verifica conexiones con manual oficial.</p>
+            <p>2. El desarrollador NO se hace responsable.</p>
+            <p>3. Verifica conexiones antes de intervenir.</p>
             <p>4. Al "ACEPTAR", asumes el riesgo.</p>
             <button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button>
         </div>
@@ -79,14 +80,20 @@
 
     <div id="p-dash" class="page">
         <h2>🏎️ DASHBOARD</h2>
-        <div id="status" style="font-size: 10px; color: #777;">Listo</div>
+        <div id="status" style="font-size: 10px; color: #777;">Listo para conectar</div>
+        
         <div class="gauge-container">
             <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
             <div class="gauge"><span>KM/H</span><h1 id="speedVal">0</h1></div>
             <div class="gauge"><span>TEMP</span><h1 id="tempVal">--</h1><span style="font-size:10px">°C</span></div>
         </div>
+        
         <canvas id="rpmChart"></canvas>
+        
         <button id="btnConnect" class="btn-action">🔌 CONECTAR</button>
+        <button id="btnDTC" class="btn-action btn-dtc">💀 LEER CÓDIGOS</button>
+        
+        <div id="dtcResult"></div>
     </div>
 
     <div id="p-inv" class="page">
@@ -123,29 +130,17 @@
 
     <script>
         // ============================================
-        // 💣 ZONA DE CONFIGURACIÓN DEL NEGOCIO 💣
-        // ============================================
-        
-        // FECHA DE VENCIMIENTO (Año, Mes-1, Día)
-        // OJO: Los meses en código empiezan en 0 (Enero=0, Febrero=1... Marzo=2)
-        // Ejemplo: Para vencer el 1 de Marzo de 2026, pon (2026, 2, 1)
-        
-        const fechaVencimiento = new Date(2026, 2, 1); // 1 de Marzo 2026
-
-        // TU WHATSAPP (Pon tu número real aquí)
-        const miWhatsapp = "521777XXXXXXX"; 
-
+        // 💣 FECHA DE VENCIMIENTO (Año, Mes-1, Día)
+        const fechaVencimiento = new Date(2026, 2, 1); // 1 Marzo 2026
         // ============================================
 
         // --- SISTEMA DE BLOQUEO ---
-        const hoy = new Date();
-        if (hoy > fechaVencimiento) {
-            // Si ya pasó la fecha, BLOQUEA TODO
+        if (new Date() > fechaVencimiento) {
             document.getElementById('lockScreen').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // No deja mover nada
+            document.body.style.overflow = 'hidden';
         }
 
-        // --- LÓGICA DE AVISO LEGAL ---
+        // --- AVISO LEGAL ---
         if (!localStorage.getItem('legalAccepted')) document.getElementById('legalModal').style.display = 'flex';
         else { document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
         function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
@@ -167,7 +162,7 @@
         function closeImg() { document.getElementById('imgModal').style.display = "none"; }
 
         // --- INVENTARIO ---
-        const inventario = [{c:"PC105309", d:"PORTA CARBON MARCHA GM AVEO", cost:75, q:2}, {c:"PC36441", d:"PORTA CARBON PLATINA/CHEVY", cost:69, q:3}]; // (Resumido para ahorrar espacio, pon los tuyos)
+        const inventario = [{c:"PC105309", d:"PORTA CARBON MARCHA GM AVEO", cost:75, q:2}, {c:"PC36441", d:"PORTA CARBON PLATINA/CHEVY", cost:69, q:3}];
         const invBody = document.getElementById('invBody');
         document.getElementById('searchInv').addEventListener('keyup', (e) => {
             invBody.innerHTML = ""; let term = e.target.value.toUpperCase();
@@ -178,15 +173,39 @@
         // --- NAVEGACION ---
         function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('nav button').forEach(x => x.classList.remove('active')); document.getElementById(p).classList.add('active'); if(p==='p-dash') document.getElementById('nav-dash').classList.add('active'); if(p==='p-inv') document.getElementById('nav-inv').classList.add('active'); if(p==='p-diag') document.getElementById('nav-diag').classList.add('active'); }
 
-        // --- OBDII ---
+        // --- OBDII Y LECTURA DE FALLAS (DTC) ---
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop;
         const ctx = document.getElementById('rpmChart').getContext('2d'); let chartData = new Array(50).fill(0);
-        document.getElementById('btnConnect').addEventListener('click', async () => { try { const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS }); const s = await d.gatt.connect(); for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} } const c = await service.getCharacteristics(); for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; } await notifyChar.startNotifications(); notifyChar.addEventListener('characteristicvaluechanged', handleData); document.getElementById('btnConnect').style.display='none'; await send("AT Z"); await wait(300); await send("AT SP0"); startLoop(); } catch(e){alert(e);} });
+        
+        document.getElementById('btnConnect').addEventListener('click', async () => { try { document.getElementById('status').innerText="Buscando..."; const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS }); const s = await d.gatt.connect(); for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} } const c = await service.getCharacteristics(); for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; } await notifyChar.startNotifications(); notifyChar.addEventListener('characteristicvaluechanged', handleData); document.getElementById('status').innerText="✅ CONECTADO"; document.getElementById('btnConnect').style.display='none'; document.getElementById('btnDTC').style.display='block'; await send("AT Z"); await wait(300); await send("AT SP0"); startLoop(); } catch(e){alert(e);} });
+
+        // BOTÓN LEER CÓDIGOS
+        document.getElementById('btnDTC').addEventListener('click', async () => {
+             clearInterval(loop); // Pausar RPM
+             document.getElementById('dtcResult').style.display = 'block';
+             document.getElementById('dtcResult').innerText = "ESCANANDO COMPUTADORA...";
+             await send("03"); // Comando pedir códigos
+        });
+
         async function send(c) { if(writeChar) await writeChar.writeValue(new TextEncoder().encode(c + '\r')); }
         function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
         function startLoop() { let step = 0; loop = setInterval(() => { if(step===0) send("010C"); if(step===1) send("010D"); step=(step+1)%2; }, 200); }
-        function handleData(ev) { let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim(); if(d.includes("410C")) { let v=parseInt(d.split("410C")[1].substr(0,4),16)/4; document.getElementById('rpmVal').innerText=Math.round(v); updateChart(v); } if(d.includes("410D")) document.getElementById('speedVal').innerText=parseInt(d.split("410D")[1].substr(0,2),16); }
+        
+        function handleData(ev) { 
+            let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim(); 
+            // RPM
+            if(d.includes("410C")) { let v=parseInt(d.split("410C")[1].substr(0,4),16)/4; document.getElementById('rpmVal').innerText=Math.round(v); updateChart(v); } 
+            // Velocidad
+            if(d.includes("410D")) document.getElementById('speedVal').innerText=parseInt(d.split("410D")[1].substr(0,2),16);
+            // CÓDIGOS DE FALLA (Respuesta a 03)
+            if(d.startsWith("43")) { 
+                let codes = d.substring(2);
+                if(codes === "00") document.getElementById('dtcResult').innerText = "✅ SISTEMA LIMPIO (SIN FALLAS)";
+                else document.getElementById('dtcResult').innerText = "⚠️ CÓDIGOS ENCONTRADOS: " + codes;
+                setTimeout(startLoop, 5000); // Volver a RPM en 5 seg
+            }
+        }
         function updateChart(v) { chartData.push(v); chartData.shift(); ctx.clearRect(0,0,300,120); ctx.beginPath(); ctx.strokeStyle='#0f0'; chartData.forEach((val,i) => { let y=120-(val/6000)*120; i==0?ctx.moveTo(i*6,y):ctx.lineTo(i*6,y); }); ctx.stroke(); }
     </script>
 </body>
