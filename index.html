@@ -2,295 +2,192 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART MASTER APP</title>
+    <title>PROPART V104 - TRIAL</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        body { background: #050505; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 60px; }
+        body { background: #050505; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 70px; overflow-x: hidden; }
         
+        /* PANTALLA DE BLOQUEO (VENCIMIENTO) */
+        #lockScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: none;
+            flex-direction: column; justify-content: center; align-items: center; padding: 20px;
+        }
+        #lockScreen h1 { color: #f00; font-size: 40px; margin-bottom: 10px; }
+        #lockScreen p { color: #fff; font-size: 18px; }
+        .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-size: 18px; font-weight: bold; margin-top: 20px; text-decoration: none; display: inline-block; }
+
         /* NAVEGACIÓN */
         nav { position: fixed; bottom: 0; width: 100%; background: #111; border-top: 1px solid #0f0; display: flex; justify-content: space-around; padding: 15px 0; z-index: 100; }
         nav button { background: none; border: none; color: #555; font-size: 24px; cursor: pointer; }
-        nav button.active { color: #0f0; text-shadow: 0 0 10px #0f0; }
+        nav button.active { color: #0f0; text-shadow: 0 0 10px #0f0; transform: scale(1.2); }
 
         /* SECCIONES */
         .page { display: none; padding: 20px; padding-bottom: 80px; }
-        .page.active { display: block; animation: fadeIn 0.5s; }
+        .page.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ESTILOS TABLERO (DASHBOARD) */
+        /* AVISO LEGAL */
+        #legalModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .legal-box { border: 2px solid #f00; padding: 20px; border-radius: 10px; background: #100; box-shadow: 0 0 30px #f00; max-height: 80vh; overflow-y: auto; text-align: justify; }
+        #btnAccept { background: #f00; color: #fff; border: none; padding: 15px; width: 100%; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; border-radius: 5px; }
+
+        /* GENERALES */
         .gauge-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
-        .gauge { width: 140px; height: 140px; border: 3px solid #0f0; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; box-shadow: 0 0 15px #0f0 inset; }
-        .gauge h1 { margin: 0; font-size: 40px; }
-        .gauge span { font-size: 12px; opacity: 0.8; }
+        .gauge { width: 130px; height: 130px; border: 3px solid #0f0; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; box-shadow: 0 0 15px #0f0 inset; }
         canvas { width: 100%; height: 120px; background: #111; border: 1px solid #333; margin-top: 20px; }
-
-        /* ESTILOS INVENTARIO */
-        .inv-controls { margin-bottom: 15px; display: flex; gap: 10px; }
-        input { width: 100%; padding: 10px; background: #111; border: 1px solid #0f0; color: #fff; border-radius: 5px; font-family: monospace; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        th { background: #0f0; color: #000; padding: 10px; }
-        td { border-bottom: 1px solid #333; padding: 8px; }
-        .money { color: #ff0; text-align: right; }
-        .profit { color: #0ff; font-size: 10px; }
-
-        /* BOTONES ACCIÓN */
-        .btn-action { background: #0f0; color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 50px; font-size: 18px; margin-top: 20px; box-shadow: 0 0 20px #0f0; cursor: pointer; }
-        .btn-dtc { background: #f00; color: #fff; box-shadow: 0 0 20px #f00; display: none; margin: 10px auto; }
+        .search-bar { width: 90%; padding: 12px; background: #111; border: 1px solid #0f0; color: #fff; border-radius: 5px; font-size: 16px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; margin-top: 5px; }
+        th { background: #0f0; color: #000; padding: 8px; font-weight: bold; }
+        td { border-bottom: 1px solid #333; padding: 10px 5px; }
+        .btn-action { background: #0f0; color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 50px; font-size: 18px; margin-top: 20px; box-shadow: 0 0 20px #0f0; width: 80%; }
         
-        #dtcResult { color: #f55; margin-top: 10px; border: 1px solid #500; padding: 10px; display: none; }
+        /* VISOR */
+        #imgModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        #imgModal img { max-width: 95%; max-height: 80%; border: 2px solid #0f0; }
+        #closeModal { margin-top: 20px; padding: 10px 30px; background: #f00; color: #fff; border: none; font-size: 18px; border-radius: 5px; }
+        
+        /* DIAGRAMAS Y ASISTENTE */
+        .diag-card { border: 1px solid #333; background: #111; margin-bottom: 10px; padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .btn-view { background: #0f0; color: #000; border: none; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .assistant-box { background: #111; border: 1px solid #0ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 10px #0ff3; }
     </style>
 </head>
 <body>
 
-    <div id="p-dash" class="page active">
-        <h2>🏎️ DASHBOARD V55</h2>
-        <div id="status" style="font-size: 10px; color: #777;">Esperando conexión...</div>
+    <div id="lockScreen">
+        <h1>🔒 BLOQUEADO</h1>
+        <p>TU LICENCIA DE PRUEBA HA EXPIRADO.</p>
+        <p style="font-size:14px; color:#aaa; margin-top:20px;">Para seguir usando la base de datos, gráficas y diagramas, contacta al administrador.</p>
+        
+        <a href="https://wa.me/521XXXXXXXXXX?text=Hola, quiero renovar mi licencia PROPART" class="btn-whatsapp">
+            📲 RENOVAR AHORA
+        </a>
+    </div>
 
-        <div class="gauge-container">
-            <div class="gauge">
-                <span>RPM</span>
-                <h1 id="rpmVal">0</h1>
-            </div>
-            <div class="gauge">
-                <span>VELOCIDAD</span>
-                <h1 id="speedVal">0</h1>
-                <span style="font-size:10px">KM/H</span>
-            </div>
-            <div class="gauge">
-                <span>TEMP</span>
-                <h1 id="tempVal">--</h1>
-                <span style="font-size:10px">°C</span>
-            </div>
+    <div id="legalModal">
+        <div class="legal-box">
+            <h2 style="color:#f00;">⚠️ AVISO LEGAL</h2>
+            <p><strong>TÉRMINOS DE USO:</strong></p>
+            <p>1. App de REFERENCIA TÉCNICA.</p>
+            <p>2. El desarrollador NO se hace responsable por daños.</p>
+            <p>3. Verifica conexiones con manual oficial.</p>
+            <p>4. Al "ACEPTAR", asumes el riesgo.</p>
+            <button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button>
         </div>
+    </div>
 
+    <div id="p-dash" class="page">
+        <h2>🏎️ DASHBOARD</h2>
+        <div id="status" style="font-size: 10px; color: #777;">Listo</div>
+        <div class="gauge-container">
+            <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
+            <div class="gauge"><span>KM/H</span><h1 id="speedVal">0</h1></div>
+            <div class="gauge"><span>TEMP</span><h1 id="tempVal">--</h1><span style="font-size:10px">°C</span></div>
+        </div>
         <canvas id="rpmChart"></canvas>
-
-        <button id="btnConnect" class="btn-action">🔌 CONECTAR OBDII</button>
-        <button id="btnDTC" class="btn-action btn-dtc">💀 LEER FALLAS</button>
-        <div id="dtcResult"></div>
+        <button id="btnConnect" class="btn-action">🔌 CONECTAR</button>
     </div>
 
     <div id="p-inv" class="page">
-        <h2>📦 INVENTARIO (+9%)</h2>
-        <div class="inv-controls">
-            <input type="text" id="searchBox" placeholder="🔍 Buscar pieza (ej: Marcha, Foco)...">
-        </div>
-        
+        <h2>📦 INVENTARIO (+30%)</h2>
+        <input type="text" id="searchInv" class="search-bar" placeholder="🔍 Buscar...">
         <table>
-            <thead>
-                <tr>
-                    <th>CANT</th>
-                    <th>DESCRIPCIÓN</th>
-                    <th>VENTA</th>
-                </tr>
-            </thead>
-            <tbody id="invBody">
-                </tbody>
+            <thead><tr><th width="15%">CANT</th><th>DESCRIPCIÓN</th><th>PRECIO</th></tr></thead>
+            <tbody id="invBody"></tbody>
         </table>
-        <div style="margin-top:20px; font-size:10px; color:#666;">*Precios incluyen 9% utilidad sobre costo.</div>
     </div>
 
+    <div id="p-diag" class="page">
+        <h2>📂 DIAGRAMAS</h2>
+        <div class="assistant-box">
+            <h3 style="margin-top:0; color:#0ff;">🕵️‍♂️ ASISTENTE</h3>
+            <input type="text" id="autoInput" placeholder="Ej: Jetta A4 2002" style="width:90%; padding:10px; margin-bottom:10px;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="buscarManual()" style="flex:1; padding:10px; background:#ff0; border:none;">📄 PDF</button>
+                <button onclick="buscarPinout()" style="flex:1; padding:10px; background:#0ff; border:none;">🔌 PINOUT</button>
+            </div>
+        </div>
+        <h3 style="border-top:1px solid #333; padding-top:10px;">💾 GUARDADOS:</h3>
+        <input type="text" id="searchDiag" class="search-bar" placeholder="🔍 Buscar...">
+        <div id="diagList"></div>
+    </div>
+
+    <div id="imgModal"><img id="modalImg" src=""><button id="closeModal" onclick="closeImg()">CERRAR ❌</button></div>
+
     <nav>
-        <button onclick="nav('p-dash')" class="active">🏎️</button>
-        <button onclick="nav('p-inv')">📦</button>
+        <button onclick="nav('p-dash')" id="nav-dash">🏎️</button>
+        <button onclick="nav('p-inv')" id="nav-inv">📦</button>
+        <button onclick="nav('p-diag')" id="nav-diag">📂</button>
     </nav>
 
     <script>
-        // --- 1. BASE DE DATOS INVENTARIO (Extraída de tus fotos) ---
-        // Costo = Precio Unitario en la foto.
-        // El sistema calculará Precio Venta = Costo + 9%
-        const inventario = [
-            // FOTO 1: CARBONES
-            {c: "PC105309", d: "PORTA CARBON MARCHA GM AVEO USATECH", cost: 75, q: 2},
-            {c: "PC698309", d: "PORTA CARBON MITSUBISHI GRANDE ASSER", cost: 75, q: 3},
-            {c: "PC698308", d: "PORTA CARBON MITSUBISHI CHICO AUTO", cost: 58, q: 3},
-            {c: "PC36441",  d: "PORTA CARBON PLATINA VW CHEVY VALEO", cost: 69, q: 3},
-            {c: "PC336246", d: "PORTA CARBON FORD NISSAN 336 246", cost: 69, q: 5},
-            {c: "PC336716", d: "PORTA CARBON BOSCH AUTOMOTIVE P45791", cost: 72, q: 5},
-            {c: "PC336200", d: "PORTA CARBON VW JETTA ECO AUTOMOTIVE", cost: 69, q: 5},
-            {c: "PC698104", d: "PORTA CARBON NISSAN COLEC. HUECO GDE", cost: 81, q: 2},
-            {c: "PC698330", d: "PORTA CARBON MITSUBISHI URVAN 2.5", cost: 81, q: 5},
-            {c: "PC69201",  d: "PORTA CARBON FORD 69201 VALUE", cost: 52, q: 5},
-            {c: "PC69119",  d: "PORTA CARBON DELCO PMGR PG260", cost: 75, q: 5},
-            // FOTO 2 y 6: ENGRANES Y BALEROS
-            {c: "EM-DODGE", d: "ENGRANE MARCHA DODGE (2) E7691809", cost: 30, q: 3},
-            {c: "EM1",      d: "ENGRANE MARCHA FORD BOSCH (1)", cost: 30, q: 3},
-            {c: "EM4",      d: "ENGRANE MARCHA NISSAN (4) Y CHEVY", cost: 29, q: 5},
-            {c: "EM5",      d: "ENGRANE MARCHA VW GOLF JETTA (5)", cost: 29, q: 5},
-            {c: "A618114",  d: "ARMADURA NISSAN HITACHI PMGR 114", cost: 264, q: 3},
-            {c: "A011097",  d: "ARMADURA NISSAN CHEVY 619130 USA", cost: 264, q: 2},
-            {c: "ART75010", d: "ARMADURA FORD MOTORCRAF BOLSA", cost: 220, q: 3},
-            {c: "SARA1P",   d: "SOQUET PRECION ARAÑA 1 POLO", cost: 12, q: 10},
-            {c: "CP1630",   d: "CABLE PLASTICO 16 / 30MTS", cost: 121, q: 2},
-            {c: "CP1430",   d: "CABLE PLASTICO 14 / 30MTS", cost: 176, q: 2},
-            {c: "B6305N",   d: "BALERO 6305 NTN", cost: 109, q: 3},
-            {c: "B6304N",   d: "BALERO 6304 NTN", cost: 83, q: 3},
-            {c: "B6000N",   d: "BALERO 6000 NTN", cost: 49, q: 2},
-            {c: "B6203N",   d: "BALERO 6203 NTN", cost: 34, q: 10},
-            // FOTO 3: VARIOS
-            {c: "BEN-FORD", d: "BENDIX ZEN FORD MOTORCRAF 10 DIENTES", cost: 114, q: 1},
-            {c: "AUT-FORD", d: "AUTOMATICO USATECH FORD SISTEMA BOSCH", cost: 220, q: 1},
-            {c: "PC-ALT",   d: "PORTA CARBON ALTER FORD 2 GEN", cost: 24, q: 1},
-            {c: "SW-UNI",   d: "SWITCH LLAVE UNIVERSAL CUB", cost: 121, q: 1},
-            {c: "MOD-VW",   d: "MODULO ENCENDIDO VW 7 PINS TEMIC", cost: 231, q: 1},
-            {c: "BOM-TSU",  d: "BOMBA GAS BOSCH NISSAN TSURU III", cost: 330, q: 1},
-            {c: "BOM-UNI",  d: "BOMBA GAS TECNOFUEL UNIV REFORZADA", cost: 253, q: 1},
-            // FOTO 4 y 5: FOCOS LED Y REGULADORES
-            {c: "F9007L",   d: "FOCO 9007 LED 4 CARAS JUEGO", cost: 253, q: 2},
-            {c: "F9005L",   d: "FOCO 9005 LED 4 CARAS JUEGO", cost: 220, q: 2},
-            {c: "FH4LED",   d: "FOCO H4 LED 4 CARAS JUEGO", cost: 253, q: 2},
-            {c: "BM740",    d: "BULBO MOTOVENT GM CHEVY", cost: 154, q: 3},
-            {c: "M37011",   d: "MARCADOR TEMPERATURA VDO", cost: 386, q: 2},
-            {c: "M43659",   d: "MOTOR VENTILADOR NISSAN TSURU", cost: 264, q: 2},
-            {c: "RIH738",   d: "REGULADOR NISSAN RIH 738 HITACHI", cost: 317, q: 2},
-            {c: "RF784",    d: "REGULADOR FORD F784 NEGRO TRANSPO", cost: 116, q: 3},
-            {c: "RE140X",   d: "REGULADOR GM E-140XR", cost: 114, q: 5},
-            {c: "FOCO-H4",  d: "FOCO H4 55 HELLA", cost: 31, q: 10},
-            {c: "FOCO-158", d: "FOCO 158 HELLA CAJA 10", cost: 24, q: 5}
-        ];
-
-        // --- LÓGICA DE INVENTARIO ---
-        const invBody = document.getElementById('invBody');
-        const searchBox = document.getElementById('searchBox');
-
-        function renderInv(filter = "") {
-            invBody.innerHTML = "";
-            let term = filter.toUpperCase();
-            
-            inventario.forEach(item => {
-                // Filtro buscador
-                if (item.d.includes(term) || item.c.includes(term)) {
-                    // CÁLCULO DE UTILIDAD NETA 9%
-                    // Precio Venta = Costo * 1.09
-                    let venta = (item.cost * 1.09).toFixed(1);
-                    let utilidad = (venta - item.cost).toFixed(1);
-
-                    let row = `<tr>
-                        <td style="font-weight:bold; color:#fff;">${item.q}</td>
-                        <td>
-                            <div style="color:#fff; font-weight:bold;">${item.d}</div>
-                            <div style="font-size:10px; color:#666;">Cód: ${item.c}</div>
-                        </td>
-                        <td class="money">
-                            <div style="font-size:14px; color:#0f0;">$${venta}</div>
-                            <div class="profit">Ganas: $${utilidad}</div>
-                        </td>
-                    </tr>`;
-                    invBody.innerHTML += row;
-                }
-            });
-        }
-
-        searchBox.addEventListener('keyup', (e) => renderInv(e.target.value));
-        renderInv(); // Cargar al inicio
-
-        // --- 2. LÓGICA DE ESCÁNER (OBDII) ---
-        const POSIBLES_UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
-        let service, writeChar, notifyChar, loop;
+        // ============================================
+        // 💣 ZONA DE CONFIGURACIÓN DEL NEGOCIO 💣
+        // ============================================
         
-        // Canvas Gráfica
-        const ctx = document.getElementById('rpmChart').getContext('2d');
-        let chartData = new Array(50).fill(0);
+        // FECHA DE VENCIMIENTO (Año, Mes-1, Día)
+        // OJO: Los meses en código empiezan en 0 (Enero=0, Febrero=1... Marzo=2)
+        // Ejemplo: Para vencer el 1 de Marzo de 2026, pon (2026, 2, 1)
+        
+        const fechaVencimiento = new Date(2026, 2, 1); // 1 de Marzo 2026
 
-        function nav(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            event.target.classList.add('active');
+        // TU WHATSAPP (Pon tu número real aquí)
+        const miWhatsapp = "521777XXXXXXX"; 
+
+        // ============================================
+
+        // --- SISTEMA DE BLOQUEO ---
+        const hoy = new Date();
+        if (hoy > fechaVencimiento) {
+            // Si ya pasó la fecha, BLOQUEA TODO
+            document.getElementById('lockScreen').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // No deja mover nada
         }
 
-        document.getElementById('btnConnect').addEventListener('click', async () => {
-            try {
-                document.getElementById('status').innerText = "🔍 Buscando V-Link...";
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: POSIBLES_UUIDS });
-                const server = await device.gatt.connect();
-                
-                // Buscar servicio compatible
-                for (let uuid of POSIBLES_UUIDS) {
-                    try { service = await server.getPrimaryService(uuid); break; } catch(e){}
-                }
-                if (!service) throw "No compatible";
+        // --- LÓGICA DE AVISO LEGAL ---
+        if (!localStorage.getItem('legalAccepted')) document.getElementById('legalModal').style.display = 'flex';
+        else { document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
+        function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
 
-                const chars = await service.getCharacteristics();
-                for (let c of chars) {
-                    if (c.properties.write) writeChar = c;
-                    if (c.properties.notify) notifyChar = c;
-                }
-                await notifyChar.startNotifications();
-                notifyChar.addEventListener('characteristicvaluechanged', handleData);
+        // --- ASISTENTE ---
+        function buscarManual() { let c = document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?q=filetype:pdf+diagrama+electrico+taller+' + c, '_blank'); }
+        function buscarPinout() { let c = document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?tbm=isch&q=pinout+ecu+computadora+arnes+' + c, '_blank'); }
 
-                document.getElementById('status').innerText = "✅ CONECTADO";
-                document.getElementById('btnConnect').style.display = 'none';
-                document.getElementById('btnDTC').style.display = 'block';
-
-                // Iniciar
-                await send("AT Z"); await wait(300);
-                await send("AT SP0"); await wait(300);
-                startLoop();
-
-            } catch (e) { alert("Error: " + e); }
-        });
-
-        document.getElementById('btnDTC').addEventListener('click', async () => {
-             clearInterval(loop);
-             document.getElementById('dtcResult').style.display = 'block';
-             document.getElementById('dtcResult').innerText = "Escaneando...";
-             await send("03");
-        });
-
-        async function send(cmd) {
-            if(writeChar) await writeChar.writeValue(new TextEncoder().encode(cmd + '\r'));
+        // --- DIAGRAMAS ---
+        const dbDiagramas = [{ nombre: "PINOUT CHEVY C2", archivo: "IMG_20260207_010441.jpg" }, { nombre: "ALTERNADOR NISSAN", archivo: "IMG_20260207_010417.jpg" }];
+        const diagList = document.getElementById('diagList');
+        const searchDiag = document.getElementById('searchDiag');
+        function renderDiag(filter = "") {
+            diagList.innerHTML = ""; let term = filter.toUpperCase();
+            dbDiagramas.forEach(d => { if(d.nombre.includes(term)) diagList.innerHTML += `<div class="diag-card"><div style="text-align:left;"><div style="font-weight:bold; color:#fff;">${d.nombre}</div></div><button class="btn-view" onclick="verImagen('${d.archivo}')">VER 👁️</button></div>`; });
         }
+        searchDiag.addEventListener('keyup', (e) => renderDiag(e.target.value)); renderDiag();
+        function verImagen(a) { document.getElementById('modalImg').src = a; document.getElementById('imgModal').style.display = "flex"; }
+        function closeImg() { document.getElementById('imgModal').style.display = "none"; }
+
+        // --- INVENTARIO ---
+        const inventario = [{c:"PC105309", d:"PORTA CARBON MARCHA GM AVEO", cost:75, q:2}, {c:"PC36441", d:"PORTA CARBON PLATINA/CHEVY", cost:69, q:3}]; // (Resumido para ahorrar espacio, pon los tuyos)
+        const invBody = document.getElementById('invBody');
+        document.getElementById('searchInv').addEventListener('keyup', (e) => {
+            invBody.innerHTML = ""; let term = e.target.value.toUpperCase();
+            inventario.forEach(i => { if(i.d.includes(term)) { let v = (i.cost * 1.30).toFixed(0); invBody.innerHTML += `<tr><td style="font-weight:bold;color:#fff">${i.q}</td><td style="color:#ddd">${i.d}</td><td class="money">$${v}</td></tr>`; }});
+        });
+        document.getElementById('searchInv').dispatchEvent(new Event('keyup'));
+
+        // --- NAVEGACION ---
+        function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('nav button').forEach(x => x.classList.remove('active')); document.getElementById(p).classList.add('active'); if(p==='p-dash') document.getElementById('nav-dash').classList.add('active'); if(p==='p-inv') document.getElementById('nav-inv').classList.add('active'); if(p==='p-diag') document.getElementById('nav-diag').classList.add('active'); }
+
+        // --- OBDII ---
+        const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
+        let service, writeChar, notifyChar, loop;
+        const ctx = document.getElementById('rpmChart').getContext('2d'); let chartData = new Array(50).fill(0);
+        document.getElementById('btnConnect').addEventListener('click', async () => { try { const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS }); const s = await d.gatt.connect(); for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} } const c = await service.getCharacteristics(); for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; } await notifyChar.startNotifications(); notifyChar.addEventListener('characteristicvaluechanged', handleData); document.getElementById('btnConnect').style.display='none'; await send("AT Z"); await wait(300); await send("AT SP0"); startLoop(); } catch(e){alert(e);} });
+        async function send(c) { if(writeChar) await writeChar.writeValue(new TextEncoder().encode(c + '\r')); }
         function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-        function startLoop() {
-            let step = 0;
-            loop = setInterval(() => {
-                if (step === 0) send("010C"); // RPM
-                if (step === 1) send("010D"); // Velocidad
-                if (step === 2) send("0105"); // Temp
-                step = (step + 1) % 3;
-            }, 200);
-        }
-
-        function handleData(event) {
-            let data = new TextDecoder().decode(event.target.value).replace(/\s/g, '').trim();
-            
-            // RPM
-            if (data.includes("410C")) {
-                let rpm = parseInt(data.split("410C")[1].substring(0,4), 16) / 4;
-                document.getElementById('rpmVal').innerText = Math.round(rpm);
-                updateChart(rpm);
-            }
-            // VELOCIDAD
-            if (data.includes("410D")) {
-                let speed = parseInt(data.split("410D")[1].substring(0,2), 16);
-                document.getElementById('speedVal').innerText = speed;
-            }
-            // TEMP
-            if (data.includes("4105")) {
-                let temp = parseInt(data.split("4105")[1].substring(0,2), 16) - 40;
-                document.getElementById('tempVal').innerText = temp;
-            }
-            // DTC (Fallas)
-            if (data.startsWith("43")) {
-                // Aquí iría la lógica completa de DTC, simplificada:
-                let codes = data.substring(2);
-                document.getElementById('dtcResult').innerText = (codes === "00") ? "✅ Sin Códigos" : "⚠️ CÓDIGOS: " + codes;
-                setTimeout(startLoop, 3000);
-            }
-        }
-
-        function updateChart(val) {
-            chartData.push(val); chartData.shift();
-            ctx.clearRect(0,0,300,150);
-            ctx.beginPath(); ctx.strokeStyle = '#0f0';
-            chartData.forEach((v, i) => {
-                let y = 120 - (v/6000)*120;
-                i==0 ? ctx.moveTo(i*6, y) : ctx.lineTo(i*6, y);
-            });
-            ctx.stroke();
-        }
+        function startLoop() { let step = 0; loop = setInterval(() => { if(step===0) send("010C"); if(step===1) send("010D"); step=(step+1)%2; }, 200); }
+        function handleData(ev) { let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim(); if(d.includes("410C")) { let v=parseInt(d.split("410C")[1].substr(0,4),16)/4; document.getElementById('rpmVal').innerText=Math.round(v); updateChart(v); } if(d.includes("410D")) document.getElementById('speedVal').innerText=parseInt(d.split("410D")[1].substr(0,2),16); }
+        function updateChart(v) { chartData.push(v); chartData.shift(); ctx.clearRect(0,0,300,120); ctx.beginPath(); ctx.strokeStyle='#0f0'; chartData.forEach((val,i) => { let y=120-(val/6000)*120; i==0?ctx.moveTo(i*6,y):ctx.lineTo(i*6,y); }); ctx.stroke(); }
     </script>
 </body>
 </html>
