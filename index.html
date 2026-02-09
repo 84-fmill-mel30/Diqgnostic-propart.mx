@@ -2,17 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V105 - MASTER</title>
+    <title>PROPART V106 - ANTIBLOQUEO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { background: #050505; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 70px; overflow-x: hidden; }
         
         /* PANTALLA DE BLOQUEO (VENCIMIENTO) */
-        #lockScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; display: none;
-            flex-direction: column; justify-content: center; align-items: center; padding: 20px;
-        }
+        #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         #lockScreen h1 { color: #f00; font-size: 40px; margin-bottom: 10px; }
         .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-size: 18px; font-weight: bold; margin-top: 20px; text-decoration: none; display: inline-block; }
 
@@ -40,7 +36,7 @@
         /* BOTONES */
         .btn-action { background: #0f0; color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 50px; font-size: 18px; margin-top: 20px; box-shadow: 0 0 20px #0f0; width: 80%; cursor: pointer; }
         .btn-dtc { background: #f00; color: #fff; display: none; margin: 10px auto; box-shadow: 0 0 20px #f00; }
-        #dtcResult { color: #f55; margin-top: 10px; border: 1px solid #500; padding: 10px; display: none; font-weight: bold; background: #100; }
+        #dtcResult { color: #f55; margin-top: 10px; border: 1px solid #500; padding: 10px; display: none; font-weight: bold; background: #100; font-size: 14px; text-align: left; }
 
         /* OTROS */
         .search-bar { width: 90%; padding: 12px; background: #111; border: 1px solid #0f0; color: #fff; border-radius: 5px; font-size: 16px; margin-bottom: 15px; }
@@ -63,7 +59,6 @@
     <div id="lockScreen">
         <h1>🔒 BLOQUEADO</h1>
         <p>LICENCIA VENCIDA</p>
-        <p style="font-size:14px; color:#aaa; margin-top:20px;">Contacta a PROPART para renovar.</p>
         <a href="https://wa.me/521777XXXXXXX?text=Hola, quiero renovar" class="btn-whatsapp">📲 RENOVAR</a>
     </div>
 
@@ -72,8 +67,7 @@
             <h2 style="color:#f00;">⚠️ AVISO LEGAL</h2>
             <p>1. App de REFERENCIA TÉCNICA.</p>
             <p>2. El desarrollador NO se hace responsable.</p>
-            <p>3. Verifica conexiones antes de intervenir.</p>
-            <p>4. Al "ACEPTAR", asumes el riesgo.</p>
+            <p>3. Verifica conexiones.</p>
             <button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button>
         </div>
     </div>
@@ -92,7 +86,6 @@
         
         <button id="btnConnect" class="btn-action">🔌 CONECTAR</button>
         <button id="btnDTC" class="btn-action btn-dtc">💀 LEER CÓDIGOS</button>
-        
         <div id="dtcResult"></div>
     </div>
 
@@ -129,27 +122,22 @@
     </nav>
 
     <script>
-        // ============================================
-        // 💣 FECHA DE VENCIMIENTO (Año, Mes-1, Día)
-        const fechaVencimiento = new Date(2026, 2, 1); // 1 Marzo 2026
-        // ============================================
+        // === CONFIGURACIÓN ===
+        const fechaVencimiento = new Date(2026, 2, 1);
+        
+        // === BLOQUEO ===
+        if (new Date() > fechaVencimiento) { document.getElementById('lockScreen').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
 
-        // --- SISTEMA DE BLOQUEO ---
-        if (new Date() > fechaVencimiento) {
-            document.getElementById('lockScreen').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        // --- AVISO LEGAL ---
+        // === LEGAL ===
         if (!localStorage.getItem('legalAccepted')) document.getElementById('legalModal').style.display = 'flex';
         else { document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
         function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
 
-        // --- ASISTENTE ---
+        // === ASISTENTE ===
         function buscarManual() { let c = document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?q=filetype:pdf+diagrama+electrico+taller+' + c, '_blank'); }
         function buscarPinout() { let c = document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?tbm=isch&q=pinout+ecu+computadora+arnes+' + c, '_blank'); }
 
-        // --- DIAGRAMAS ---
+        // === DIAGRAMAS ===
         const dbDiagramas = [{ nombre: "PINOUT CHEVY C2", archivo: "IMG_20260207_010441.jpg" }, { nombre: "ALTERNADOR NISSAN", archivo: "IMG_20260207_010417.jpg" }];
         const diagList = document.getElementById('diagList');
         const searchDiag = document.getElementById('searchDiag');
@@ -161,7 +149,7 @@
         function verImagen(a) { document.getElementById('modalImg').src = a; document.getElementById('imgModal').style.display = "flex"; }
         function closeImg() { document.getElementById('imgModal').style.display = "none"; }
 
-        // --- INVENTARIO ---
+        // === INVENTARIO ===
         const inventario = [{c:"PC105309", d:"PORTA CARBON MARCHA GM AVEO", cost:75, q:2}, {c:"PC36441", d:"PORTA CARBON PLATINA/CHEVY", cost:69, q:3}];
         const invBody = document.getElementById('invBody');
         document.getElementById('searchInv').addEventListener('keyup', (e) => {
@@ -169,23 +157,31 @@
             inventario.forEach(i => { if(i.d.includes(term)) { let v = (i.cost * 1.30).toFixed(0); invBody.innerHTML += `<tr><td style="font-weight:bold;color:#fff">${i.q}</td><td style="color:#ddd">${i.d}</td><td class="money">$${v}</td></tr>`; }});
         });
         document.getElementById('searchInv').dispatchEvent(new Event('keyup'));
-
-        // --- NAVEGACION ---
         function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('nav button').forEach(x => x.classList.remove('active')); document.getElementById(p).classList.add('active'); if(p==='p-dash') document.getElementById('nav-dash').classList.add('active'); if(p==='p-inv') document.getElementById('nav-inv').classList.add('active'); if(p==='p-diag') document.getElementById('nav-diag').classList.add('active'); }
 
-        // --- OBDII Y LECTURA DE FALLAS (DTC) ---
+        // === OBDII Y LECTURA DE FALLAS ===
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop;
         const ctx = document.getElementById('rpmChart').getContext('2d'); let chartData = new Array(50).fill(0);
         
         document.getElementById('btnConnect').addEventListener('click', async () => { try { document.getElementById('status').innerText="Buscando..."; const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS }); const s = await d.gatt.connect(); for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} } const c = await service.getCharacteristics(); for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; } await notifyChar.startNotifications(); notifyChar.addEventListener('characteristicvaluechanged', handleData); document.getElementById('status').innerText="✅ CONECTADO"; document.getElementById('btnConnect').style.display='none'; document.getElementById('btnDTC').style.display='block'; await send("AT Z"); await wait(300); await send("AT SP0"); startLoop(); } catch(e){alert(e);} });
 
-        // BOTÓN LEER CÓDIGOS
+        // --- AQUÍ ESTÁ EL ARREGLO ANTIBLOQUEO ---
         document.getElementById('btnDTC').addEventListener('click', async () => {
-             clearInterval(loop); // Pausar RPM
+             // 1. MATAMOS EL LOOP BRUSCAMENTE
+             clearInterval(loop);
+             
+             // 2. AVISAMOS
              document.getElementById('dtcResult').style.display = 'block';
-             document.getElementById('dtcResult').innerText = "ESCANANDO COMPUTADORA...";
-             await send("03"); // Comando pedir códigos
+             document.getElementById('dtcResult').innerText = "⏳ ESPERANDO ESCÁNER...";
+             
+             // 3. ESPERAMOS 1 SEGUNDO PARA QUE RESPIRE (ANTIBLOQUEO)
+             await wait(1500);
+             
+             document.getElementById('dtcResult').innerText = "🔍 ESCANEANDO FALLAS...";
+             
+             // 4. MANDAMOS LA ORDEN DE CÓDIGOS
+             await send("03");
         });
 
         async function send(c) { if(writeChar) await writeChar.writeValue(new TextEncoder().encode(c + '\r')); }
@@ -194,16 +190,21 @@
         
         function handleData(ev) { 
             let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim(); 
-            // RPM
+            // Datos en vivo
             if(d.includes("410C")) { let v=parseInt(d.split("410C")[1].substr(0,4),16)/4; document.getElementById('rpmVal').innerText=Math.round(v); updateChart(v); } 
-            // Velocidad
             if(d.includes("410D")) document.getElementById('speedVal').innerText=parseInt(d.split("410D")[1].substr(0,2),16);
-            // CÓDIGOS DE FALLA (Respuesta a 03)
+            
+            // RESPUESTA DE CÓDIGOS (43...)
             if(d.startsWith("43")) { 
                 let codes = d.substring(2);
-                if(codes === "00") document.getElementById('dtcResult').innerText = "✅ SISTEMA LIMPIO (SIN FALLAS)";
-                else document.getElementById('dtcResult').innerText = "⚠️ CÓDIGOS ENCONTRADOS: " + codes;
-                setTimeout(startLoop, 5000); // Volver a RPM en 5 seg
+                if(codes === "00" || codes.includes("NO")) document.getElementById('dtcResult').innerText = "✅ SIN CÓDIGOS DE FALLA";
+                else document.getElementById('dtcResult').innerText = "⚠️ CÓDIGOS RAW: " + codes;
+                
+                // Reiniciar RPM después de 5 segundos
+                setTimeout(() => {
+                    document.getElementById('dtcResult').style.display = 'none';
+                    startLoop(); 
+                }, 5000);
             }
         }
         function updateChart(v) { chartData.push(v); chartData.shift(); ctx.clearRect(0,0,300,120); ctx.beginPath(); ctx.strokeStyle='#0f0'; chartData.forEach((val,i) => { let y=120-(val/6000)*120; i==0?ctx.moveTo(i*6,y):ctx.lineTo(i*6,y); }); ctx.stroke(); }
