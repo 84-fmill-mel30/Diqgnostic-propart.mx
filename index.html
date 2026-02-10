@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V106 - ANTIBLOQUEO</title>
+    <title>PROPART V107 - CIRUJANO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { background: #050505; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 70px; overflow-x: hidden; }
         
-        /* PANTALLA DE BLOQUEO (VENCIMIENTO) */
+        /* PANTALLA DE BLOQUEO */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         #lockScreen h1 { color: #f00; font-size: 40px; margin-bottom: 10px; }
         .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-size: 18px; font-weight: bold; margin-top: 20px; text-decoration: none; display: inline-block; }
@@ -56,34 +56,19 @@
 </head>
 <body>
 
-    <div id="lockScreen">
-        <h1>🔒 BLOQUEADO</h1>
-        <p>LICENCIA VENCIDA</p>
-        <a href="https://wa.me/521777XXXXXXX?text=Hola, quiero renovar" class="btn-whatsapp">📲 RENOVAR</a>
-    </div>
+    <div id="lockScreen"><h1>🔒 BLOQUEADO</h1><p>LICENCIA VENCIDA</p><a href="#" class="btn-whatsapp">📲 RENOVAR</a></div>
 
-    <div id="legalModal">
-        <div class="legal-box">
-            <h2 style="color:#f00;">⚠️ AVISO LEGAL</h2>
-            <p>1. App de REFERENCIA TÉCNICA.</p>
-            <p>2. El desarrollador NO se hace responsable.</p>
-            <p>3. Verifica conexiones.</p>
-            <button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button>
-        </div>
-    </div>
+    <div id="legalModal"><div class="legal-box"><h2 style="color:#f00;">⚠️ AVISO</h2><p>1. Referencia técnica.</p><p>2. No nos hacemos responsables.</p><button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button></div></div>
 
     <div id="p-dash" class="page">
         <h2>🏎️ DASHBOARD</h2>
         <div id="status" style="font-size: 10px; color: #777;">Listo para conectar</div>
-        
         <div class="gauge-container">
             <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
             <div class="gauge"><span>KM/H</span><h1 id="speedVal">0</h1></div>
             <div class="gauge"><span>TEMP</span><h1 id="tempVal">--</h1><span style="font-size:10px">°C</span></div>
         </div>
-        
         <canvas id="rpmChart"></canvas>
-        
         <button id="btnConnect" class="btn-action">🔌 CONECTAR</button>
         <button id="btnDTC" class="btn-action btn-dtc">💀 LEER CÓDIGOS</button>
         <div id="dtcResult"></div>
@@ -92,10 +77,7 @@
     <div id="p-inv" class="page">
         <h2>📦 INVENTARIO (+30%)</h2>
         <input type="text" id="searchInv" class="search-bar" placeholder="🔍 Buscar...">
-        <table>
-            <thead><tr><th width="15%">CANT</th><th>DESCRIPCIÓN</th><th>PRECIO</th></tr></thead>
-            <tbody id="invBody"></tbody>
-        </table>
+        <table><thead><tr><th width="15%">CANT</th><th>DESCRIPCIÓN</th><th>PRECIO</th></tr></thead><tbody id="invBody"></tbody></table>
     </div>
 
     <div id="p-diag" class="page">
@@ -103,14 +85,10 @@
         <div class="assistant-box">
             <h3 style="margin-top:0; color:#0ff;">🕵️‍♂️ ASISTENTE</h3>
             <input type="text" id="autoInput" placeholder="Ej: Jetta A4 2002" style="width:90%; padding:10px; margin-bottom:10px;">
-            <div style="display:flex; gap:10px;">
-                <button onclick="buscarManual()" style="flex:1; padding:10px; background:#ff0; border:none;">📄 PDF</button>
-                <button onclick="buscarPinout()" style="flex:1; padding:10px; background:#0ff; border:none;">🔌 PINOUT</button>
-            </div>
+            <div style="display:flex; gap:10px;"><button onclick="buscarManual()" style="flex:1; padding:10px; background:#ff0;">📄 PDF</button><button onclick="buscarPinout()" style="flex:1; padding:10px; background:#0ff;">🔌 PINOUT</button></div>
         </div>
         <h3 style="border-top:1px solid #333; padding-top:10px;">💾 GUARDADOS:</h3>
-        <input type="text" id="searchDiag" class="search-bar" placeholder="🔍 Buscar...">
-        <div id="diagList"></div>
+        <input type="text" id="searchDiag" class="search-bar" placeholder="🔍 Buscar..."><div id="diagList"></div>
     </div>
 
     <div id="imgModal"><img id="modalImg" src=""><button id="closeModal" onclick="closeImg()">CERRAR ❌</button></div>
@@ -124,8 +102,6 @@
     <script>
         // === CONFIGURACIÓN ===
         const fechaVencimiento = new Date(2026, 2, 1);
-        
-        // === BLOQUEO ===
         if (new Date() > fechaVencimiento) { document.getElementById('lockScreen').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
 
         // === LEGAL ===
@@ -133,18 +109,13 @@
         else { document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
         function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; document.getElementById('p-dash').classList.add('active'); document.getElementById('nav-dash').classList.add('active'); }
 
-        // === ASISTENTE ===
+        // === ASISTENTE & DIAGRAMAS ===
         function buscarManual() { let c = document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?q=filetype:pdf+diagrama+electrico+taller+' + c, '_blank'); }
         function buscarPinout() { let c = document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?tbm=isch&q=pinout+ecu+computadora+arnes+' + c, '_blank'); }
-
-        // === DIAGRAMAS ===
         const dbDiagramas = [{ nombre: "PINOUT CHEVY C2", archivo: "IMG_20260207_010441.jpg" }, { nombre: "ALTERNADOR NISSAN", archivo: "IMG_20260207_010417.jpg" }];
         const diagList = document.getElementById('diagList');
         const searchDiag = document.getElementById('searchDiag');
-        function renderDiag(filter = "") {
-            diagList.innerHTML = ""; let term = filter.toUpperCase();
-            dbDiagramas.forEach(d => { if(d.nombre.includes(term)) diagList.innerHTML += `<div class="diag-card"><div style="text-align:left;"><div style="font-weight:bold; color:#fff;">${d.nombre}</div></div><button class="btn-view" onclick="verImagen('${d.archivo}')">VER 👁️</button></div>`; });
-        }
+        function renderDiag(filter = "") { diagList.innerHTML = ""; let term = filter.toUpperCase(); dbDiagramas.forEach(d => { if(d.nombre.includes(term)) diagList.innerHTML += `<div class="diag-card"><div style="text-align:left;"><div style="font-weight:bold; color:#fff;">${d.nombre}</div></div><button class="btn-view" onclick="verImagen('${d.archivo}')">VER 👁️</button></div>`; }); }
         searchDiag.addEventListener('keyup', (e) => renderDiag(e.target.value)); renderDiag();
         function verImagen(a) { document.getElementById('modalImg').src = a; document.getElementById('imgModal').style.display = "flex"; }
         function closeImg() { document.getElementById('imgModal').style.display = "none"; }
@@ -152,59 +123,75 @@
         // === INVENTARIO ===
         const inventario = [{c:"PC105309", d:"PORTA CARBON MARCHA GM AVEO", cost:75, q:2}, {c:"PC36441", d:"PORTA CARBON PLATINA/CHEVY", cost:69, q:3}];
         const invBody = document.getElementById('invBody');
-        document.getElementById('searchInv').addEventListener('keyup', (e) => {
-            invBody.innerHTML = ""; let term = e.target.value.toUpperCase();
-            inventario.forEach(i => { if(i.d.includes(term)) { let v = (i.cost * 1.30).toFixed(0); invBody.innerHTML += `<tr><td style="font-weight:bold;color:#fff">${i.q}</td><td style="color:#ddd">${i.d}</td><td class="money">$${v}</td></tr>`; }});
-        });
+        document.getElementById('searchInv').addEventListener('keyup', (e) => { invBody.innerHTML = ""; let term = e.target.value.toUpperCase(); inventario.forEach(i => { if(i.d.includes(term)) { let v = (i.cost * 1.30).toFixed(0); invBody.innerHTML += `<tr><td style="font-weight:bold;color:#fff">${i.q}</td><td style="color:#ddd">${i.d}</td><td class="money">$${v}</td></tr>`; }}); });
         document.getElementById('searchInv').dispatchEvent(new Event('keyup'));
         function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('nav button').forEach(x => x.classList.remove('active')); document.getElementById(p).classList.add('active'); if(p==='p-dash') document.getElementById('nav-dash').classList.add('active'); if(p==='p-inv') document.getElementById('nav-inv').classList.add('active'); if(p==='p-diag') document.getElementById('nav-diag').classList.add('active'); }
 
-        // === OBDII Y LECTURA DE FALLAS ===
+        // === OBDII ===
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop;
+        let isReadingDTC = false; // MODO PROTEGIDO
+
         const ctx = document.getElementById('rpmChart').getContext('2d'); let chartData = new Array(50).fill(0);
         
         document.getElementById('btnConnect').addEventListener('click', async () => { try { document.getElementById('status').innerText="Buscando..."; const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS }); const s = await d.gatt.connect(); for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} } const c = await service.getCharacteristics(); for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; } await notifyChar.startNotifications(); notifyChar.addEventListener('characteristicvaluechanged', handleData); document.getElementById('status').innerText="✅ CONECTADO"; document.getElementById('btnConnect').style.display='none'; document.getElementById('btnDTC').style.display='block'; await send("AT Z"); await wait(300); await send("AT SP0"); startLoop(); } catch(e){alert(e);} });
 
-        // --- AQUÍ ESTÁ EL ARREGLO ANTIBLOQUEO ---
+        // --- SISTEMA ANTIBLOQUEO CORREGIDO ---
         document.getElementById('btnDTC').addEventListener('click', async () => {
-             // 1. MATAMOS EL LOOP BRUSCAMENTE
+             if(isReadingDTC) return; // Evita doble clic
+             isReadingDTC = true;
+             
+             // 1. FRENAR TODO
              clearInterval(loop);
              
-             // 2. AVISAMOS
-             document.getElementById('dtcResult').style.display = 'block';
-             document.getElementById('dtcResult').innerText = "⏳ ESPERANDO ESCÁNER...";
+             // 2. MENSAJES DE ESPERA
+             let resultBox = document.getElementById('dtcResult');
+             resultBox.style.display = 'block';
+             resultBox.style.background = '#220';
+             resultBox.innerText = "🛑 FRENANDO DATOS (3s)...";
              
-             // 3. ESPERAMOS 1 SEGUNDO PARA QUE RESPIRE (ANTIBLOQUEO)
-             await wait(1500);
+             // 3. ENFRIAR EL ESCÁNER (3 SEGUNDOS OBLIGATORIOS)
+             await wait(3000);
              
-             document.getElementById('dtcResult').innerText = "🔍 ESCANEANDO FALLAS...";
-             
-             // 4. MANDAMOS LA ORDEN DE CÓDIGOS
+             resultBox.innerText = "🔍 LEYENDO CÓDIGOS AHORA...";
+             resultBox.style.background = '#002';
+
+             // 4. PEDIR CÓDIGOS SUAVEMENTE
              await send("03");
         });
 
         async function send(c) { if(writeChar) await writeChar.writeValue(new TextEncoder().encode(c + '\r')); }
         function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-        function startLoop() { let step = 0; loop = setInterval(() => { if(step===0) send("010C"); if(step===1) send("010D"); step=(step+1)%2; }, 200); }
+        function startLoop() { let step = 0; loop = setInterval(() => { if(!isReadingDTC) { if(step===0) send("010C"); if(step===1) send("010D"); step=(step+1)%2; } }, 200); }
         
         function handleData(ev) { 
             let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim(); 
-            // Datos en vivo
-            if(d.includes("410C")) { let v=parseInt(d.split("410C")[1].substr(0,4),16)/4; document.getElementById('rpmVal').innerText=Math.round(v); updateChart(v); } 
-            if(d.includes("410D")) document.getElementById('speedVal').innerText=parseInt(d.split("410D")[1].substr(0,2),16);
+            
+            // SI ESTAMOS LEYENDO FALLAS, IGNORAR RPM VIEJOS
+            if (isReadingDTC && !d.startsWith("43")) return;
+
+            // Datos en vivo (SOLO SI NO ESTAMOS EN MODO FALLAS)
+            if(!isReadingDTC) {
+                if(d.includes("410C")) { let v=parseInt(d.split("410C")[1].substr(0,4),16)/4; document.getElementById('rpmVal').innerText=Math.round(v); updateChart(v); } 
+                if(d.includes("410D")) document.getElementById('speedVal').innerText=parseInt(d.split("410D")[1].substr(0,2),16);
+            }
             
             // RESPUESTA DE CÓDIGOS (43...)
             if(d.startsWith("43")) { 
                 let codes = d.substring(2);
-                if(codes === "00" || codes.includes("NO")) document.getElementById('dtcResult').innerText = "✅ SIN CÓDIGOS DE FALLA";
-                else document.getElementById('dtcResult').innerText = "⚠️ CÓDIGOS RAW: " + codes;
+                let msg = "";
+                if(codes === "00" || codes.includes("NO")) msg = "✅ SIN CÓDIGOS DE FALLA";
+                else msg = "⚠️ CÓDIGOS: " + codes;
                 
-                // Reiniciar RPM después de 5 segundos
+                document.getElementById('dtcResult').innerText = msg;
+                document.getElementById('dtcResult').style.background = '#100';
+
+                // Reiniciar todo en 8 segundos
                 setTimeout(() => {
                     document.getElementById('dtcResult').style.display = 'none';
-                    startLoop(); 
-                }, 5000);
+                    isReadingDTC = false; // Quitar candado
+                    startLoop(); // Volver a RPM
+                }, 8000);
             }
         }
         function updateChart(v) { chartData.push(v); chartData.shift(); ctx.clearRect(0,0,300,120); ctx.beginPath(); ctx.strokeStyle='#0f0'; chartData.forEach((val,i) => { let y=120-(val/6000)*120; i==0?ctx.moveTo(i*6,y):ctx.lineTo(i*6,y); }); ctx.stroke(); }
