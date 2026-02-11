@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V109 - DIAGNOSTICO PRO</title>
+    <title>PROPART V112 - ACADEMY 2</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* PANTALLA DE BLOQUEO */
+        /* BLOQUEO */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         #lockScreen h1 { color: #f00; font-size: 40px; }
         .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; text-decoration: none; margin-top: 20px; }
@@ -18,22 +18,25 @@
         #btnAccept { background: #f00; color: #fff; width: 100%; padding: 15px; font-weight: bold; border: none; margin-top: 10px; }
 
         /* NAVEGACIÓN */
-        nav { position: fixed; bottom: 0; width: 100%; background: #111; border-top: 1px solid #0f0; display: flex; justify-content: space-around; padding: 15px 0; z-index: 100; }
-        nav button { background: none; border: none; color: #555; font-size: 24px; cursor: pointer; }
+        nav { position: fixed; bottom: 0; width: 100%; background: #111; border-top: 1px solid #0f0; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        nav button { background: none; border: none; color: #555; font-size: 22px; cursor: pointer; }
         nav button.active { color: #0f0; text-shadow: 0 0 10px #0f0; transform: scale(1.3); }
         .page { display: none; padding: 10px; padding-bottom: 90px; }
         .page.active { display: block; }
 
-        /* ESTILOS GRÁFICAS */
+        /* ESTILOS ESCUELA */
+        details { background: #111; border: 1px solid #333; margin-bottom: 10px; border-radius: 5px; text-align: left; }
+        summary { padding: 15px; cursor: pointer; font-weight: bold; color: #fff; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '+'; color: #0f0; font-weight: bold; font-size: 20px; }
+        details[open] summary::after { content: '-'; color: #f00; }
+        .lesson-content { padding: 15px; color: #ccc; font-size: 14px; line-height: 1.6; border-top: 1px solid #333; background: #050505; }
+        .highlight { color: #ff0; font-weight: bold; }
+
+        /* GRÁFICAS */
         .chart-box { background: #111; border: 1px solid #333; margin-bottom: 10px; padding: 5px; border-radius: 5px; }
         canvas { width: 100%; height: 100px; background: #000; border-bottom: 1px solid #0f0; }
         select { width: 100%; background: #222; color: #fff; padding: 10px; border: 1px solid #0f0; font-family: monospace; font-size: 16px; margin-bottom: 5px; }
         .val-display { font-size: 24px; font-weight: bold; color: #ff0; text-align: right; display: block; }
-
-        /* ESTILOS DTC */
-        .btn-action { background: #0f0; color: #000; padding: 15px; width: 90%; font-weight: bold; border-radius: 50px; font-size: 18px; border: none; margin: 10px 0; box-shadow: 0 0 15px #0f0; }
-        .btn-danger { background: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
-        #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
 
         /* TABLERO */
         .gauge-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
@@ -41,12 +44,15 @@
         .gauge h1 { font-size: 25px; margin: 0; }
         .gauge span { font-size: 10px; opacity: 0.7; }
 
-        /* DIAGRAMAS */
+        /* DIAGRAMAS Y OTROS */
+        .btn-action { background: #0f0; color: #000; padding: 15px; width: 90%; font-weight: bold; border-radius: 50px; font-size: 18px; border: none; margin: 10px 0; box-shadow: 0 0 15px #0f0; cursor: pointer; }
+        .btn-danger { background: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
         .diag-card { background: #111; border: 1px solid #333; padding: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .btn-mini { background: #0f0; border: none; padding: 5px 10px; font-weight: bold; cursor: pointer; }
         #imgModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
         #imgModal img { max-width: 95%; max-height: 80%; border: 2px solid #0f0; }
         #closeModal { margin-top: 20px; padding: 10px 30px; background: #f00; color: #fff; border: none; font-size: 18px; }
+        #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -63,41 +69,33 @@
             <div class="gauge"><span>TEMP</span><h1 id="tempVal">--</h1></div>
         </div>
         <button id="btnConnect" class="btn-action">🔌 CONECTAR OBDII</button>
-        <p style="font-size:10px; color:#666;">Para ver gráficas, ve a la pestaña 📈</p>
+        <p style="font-size:10px; color:#666;">Ve a 📈 para ver sensores en vivo.</p>
     </div>
 
     <div id="p-live" class="page">
         <h2>📈 DATOS EN VIVO</h2>
-        <p style="font-size:10px; color:#888;">Selecciona 2 sensores para graficar:</p>
-
         <div class="chart-box">
             <select id="sel1" onchange="resetChart(1)">
                 <option value="010C">RPM Motor</option>
-                <option value="010D">Velocidad (Km/h)</option>
-                <option value="0104">Carga de Motor (%)</option>
-                <option value="0105">Temperatura Agua (°C)</option>
-                <option value="010F">Temperatura Aire Admisión (°C)</option>
-                <option value="0110">MAF (Caudal Aire) (g/s)</option>
-                <option value="0111">TPS (Posición Mariposa) (%)</option>
-                <option value="010E">Avance de Tiempo (°)</option>
-                <option value="0114">O2 Sensor 1 Bank 1 (V)</option>
-                <option value="0142">Voltaje Modulo (V)</option>
-                <option value="0149">APP D (Pedal 1) (%)</option>
-                <option value="014A">APP E (Pedal 2) (%)</option>
+                <option value="010D">Velocidad</option>
+                <option value="0104">Carga Motor %</option>
+                <option value="0105">Temp Agua</option>
+                <option value="010F">Temp Aire</option>
+                <option value="0111">TPS Mariposa %</option>
+                <option value="0110">MAF (g/s)</option>
+                <option value="010E">Avance Tiempo</option>
+                <option value="0114">O2 Sensor 1 (V)</option>
+                <option value="0142">Voltaje Modulo</option>
             </select>
             <span id="val1" class="val-display">0</span>
             <canvas id="chart1"></canvas>
         </div>
-
         <div class="chart-box">
             <select id="sel2" onchange="resetChart(2)">
-                <option value="0111" selected>TPS (Posición Mariposa)</option>
+                <option value="0111" selected>TPS Mariposa %</option>
                 <option value="010C">RPM Motor</option>
-                <option value="0104">Carga de Motor (%)</option>
-                <option value="010F">Temperatura Aire Admisión</option>
-                <option value="0114">O2 Sensor 1 Bank 1 (V)</option>
-                <option value="0149">APP D (Pedal 1) (%)</option>
-                <option value="014A">APP E (Pedal 2) (%)</option>
+                <option value="0114">O2 Sensor 1 (V)</option>
+                <option value="0105">Temp Agua</option>
             </select>
             <span id="val2" class="val-display">0</span>
             <canvas id="chart2"></canvas>
@@ -105,15 +103,44 @@
     </div>
 
     <div id="p-dtc" class="page">
-        <h2>💀 ESCÁNER DE FALLAS</h2>
-        <div style="background:#220; color:#ff0; padding:10px; font-size:12px; margin-bottom:10px;">
-            ⚠️ PRECAUCIÓN: Motor apagado, Switch abierto (KOEO).
-        </div>
-        
+        <h2>💀 ESCÁNER FALLAS</h2>
+        <div style="background:#220; color:#ff0; padding:10px; font-size:12px; margin-bottom:10px;">⚠️ Motor apagado, Switch abierto.</div>
         <button id="btnReadDTC" class="btn-action" style="background:#ff0;">🔍 LEER CÓDIGOS</button>
         <button id="btnEraseDTC" class="btn-action btn-danger">🧹 BORRAR CÓDIGOS</button>
-        
-        <div id="dtcLog">Esperando lectura...</div>
+        <div id="dtcLog">Esperando...</div>
+    </div>
+
+    <div id="p-school" class="page">
+        <h2>🎓 MANUAL PROPART</h2>
+        <p style="font-size:12px; color:#aaa;">Tu guía de estudio personal.</p>
+
+        <details>
+            <summary>CAP 1: ELECTRICIDAD BÁSICA ⚡</summary>
+            <div class="lesson-content">
+                <p><span class="highlight">VOLTAJE (V):</span> PRESIÓN. 12V es para actuadores, 5V para sensores/chips.</p>
+                <p><span class="highlight">AMPERAJE (A):</span> CAUDAL. Esto calienta cables. Corto circuito = Mucho amperaje.</p>
+                <p><span class="highlight">RESISTENCIA (Ω):</span> TAPÓN. Tierras sucias crean resistencia y fallas.</p>
+                <p style="border:1px solid #f00; padding:5px; color:#f55;">¡REVISA TIERRAS! Multímetro 20V: Punta Negra a Batería(-), Punta Roja a Motor. Si marca > 0.30V, limpia la tierra.</p>
+            </div>
+        </details>
+
+        <details open>
+            <summary>CAP 2: ANATOMÍA ECU 🧠</summary>
+            <div class="lesson-content">
+                <p>¿Qué hay adentro de la computadora?</p>
+                <p><strong>1. LOS DRIVERS (Transistores):</strong><br>Son los "músculos". Transistores grandes pegados a la orilla. Ellos disparan Bobinas e Inyectores. Si no hay pulso, checa estos primero.</p>
+                <p><strong>2. CAPACITORES (Botes):</strong><br>Son filtros. Si están inflados como palomitas, cámbialos. Provocan que la ECU se apague sola.</p>
+                <p><strong>3. REGULADOR 5V:</strong><br>Convierte los 12V de la batería en 5V para el cerebro. Si falla, la ECU muere totalmente.</p>
+                <p><strong>4. MEMORIAS (El Tesoro):</strong><br>EEPROM (Chica, 8 patas) = Llaves/Immo.<br>FLASH (Grande, muchas patas) = Mapas/Potencia.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>CAP 3: MEMORIAS (PRÓXIMAMENTE) 💾</summary>
+            <div class="lesson-content">
+                <p>Aquí veremos cómo leer la EEPROM con pinzas SOIC8.</p>
+            </div>
+        </details>
     </div>
 
     <div id="p-diag" class="page">
@@ -129,36 +156,35 @@
         <button onclick="nav('p-dash')" id="nav-dash" class="active">🏎️</button>
         <button onclick="nav('p-live')" id="nav-live">📈</button>
         <button onclick="nav('p-dtc')" id="nav-dtc">💀</button>
+        <button onclick="nav('p-school')" id="nav-school">🎓</button>
         <button onclick="nav('p-diag')" id="nav-diag">📂</button>
     </nav>
 
     <script>
-        // CONFIGURACIÓN DE FECHA
+        // CONFIG
         const fechaVencimiento = new Date(2026, 2, 1);
-        if (new Date() > fechaVencimiento) { document.getElementById('lockScreen').style.display = 'flex'; }
-        
-        // LEGAL
+        if (new Date() > fechaVencimiento) document.getElementById('lockScreen').style.display = 'flex';
         if (!localStorage.getItem('legalAccepted')) document.getElementById('legalModal').style.display = 'flex';
         else document.getElementById('legalModal').style.display = 'none';
         function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; }
 
-        // NAVEGACIÓN
+        // UTILS
         function nav(p) {
             document.querySelectorAll('.page').forEach(x => x.style.display='none');
             document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
             document.getElementById(p).style.display='block';
             document.getElementById('nav-'+p.split('-')[1]).classList.add('active');
-            
-            // Si salimos de gráficas, limpiamos charts para no saturar
-            if(p !== 'p-live') { chartData1 = new Array(50).fill(0); chartData2 = new Array(50).fill(0); }
+            if(p !== 'p-live') { chartData1.fill(0); chartData2.fill(0); }
         }
-        nav('p-dash'); // Iniciar en Dash
+        nav('p-dash');
 
-        // --- BLUETOOTH & OBDII ---
+        // BLUETOOTH CORE
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop;
-        let mode = 'DASH'; // DASH, LIVE, DTC
-        
+        let mode = 'DASH';
+        let busy = false;
+        let lastResponseTime = 0;
+
         // GRÁFICAS
         const ctx1 = document.getElementById('chart1').getContext('2d');
         const ctx2 = document.getElementById('chart2').getContext('2d');
@@ -175,142 +201,75 @@
                 for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; }
                 await notifyChar.startNotifications();
                 notifyChar.addEventListener('characteristicvaluechanged', handleData);
-                
                 document.getElementById('status').innerText="✅ CONECTADO";
                 document.getElementById('btnConnect').style.display='none';
-                
-                // INICIALIZACIÓN OBDII
-                await send("AT Z"); await wait(300);
-                await send("AT SP0"); await wait(300);
-                await send("AT E0"); // Quitar eco
-                
+                await send("AT Z"); await wait(500); await send("AT SP0"); await wait(500); await send("AT E0"); await wait(500);
                 startLoop();
-            } catch(e){ alert("Error: " + e); }
+            } catch(e){ alert("Error conectando: " + e); }
         });
 
-        // --- BUCLE DE DATOS DINÁMICO ---
         async function startLoop() {
             loop = setInterval(() => {
-                if(mode === 'DASH') {
-                    send("010C"); // RPM
-                    setTimeout(() => send("010D"), 100); // Velocidad
-                    setTimeout(() => send("0105"), 200); // Temp
-                } 
-                else if (mode === 'LIVE') {
-                    // Pide lo que esté seleccionado en los combos
-                    let pid1 = document.getElementById('sel1').value; // Ej: 010C
-                    let pid2 = document.getElementById('sel2').value; // Ej: 0111
-                    
-                    // Quitamos el "01" para mandarlo limpio si el ELM lo prefiere, pero mandamos completo por seguridad
-                    // En este bucle alternamos
-                    send(pid1.substring(2)); // Manda solo "0C" o "11" si ya está en modo 01, pero mejor mandamos "010C"
-                    // NOTA: Para simplificar, asumimos que send maneja el string
-                    send(pid1);
-                    setTimeout(() => send(pid2), 150);
-                }
-            }, 400); // Frecuencia
+                if(busy && (Date.now() - lastResponseTime > 2000)) { busy = false; }
+                if(busy) return;
+                if(mode === 'DASH') send("010C");
+                else if (mode === 'LIVE') { let pid = (Date.now() % 2 === 0) ? document.getElementById('sel1').value : document.getElementById('sel2').value; send(pid); }
+            }, 500);
         }
 
-        async function send(cmd) { if(writeChar) await writeChar.writeValue(new TextEncoder().encode(cmd + '\r')); }
+        async function send(cmd) { 
+            if(writeChar && !busy) {
+                busy = true; lastResponseTime = Date.now();
+                try { await writeChar.writeValue(new TextEncoder().encode(cmd + '\r')); } catch(e) { busy = false; }
+            }
+        }
         function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-        // --- MANEJO DE DATOS ---
         function handleData(ev) {
+            busy = false; lastResponseTime = Date.now();
             let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim();
-            
-            // RESPUESTAS DTC
-            if(d.startsWith("43")) {
-                let codes = d.substring(2);
-                document.getElementById('dtcLog').innerText = (codes==="00"||codes.includes("NO")) ? "✅ SIN FALLAS" : "⚠️ CÓDIGOS RAW: " + codes + "\n(Busca decodificar P + digitos)";
-                mode = 'DASH'; // Volver a normal
-            }
-            if(d.startsWith("44")) { // Respuesta a borrado 04
-                document.getElementById('dtcLog').innerText = "✅ MEMORIA BORRADA. APAGA Y PRENDE EL CARRO.";
-                alert("¡CÓDIGOS BORRADOS!");
-                mode = 'DASH';
-            }
-
-            // RESPUESTAS SENSORES (Modo 41 xx)
+            if(d.includes(">") || d.includes("STOPPED")) return;
+            if(d.startsWith("43")) { let codes = d.substring(2); document.getElementById('dtcLog').innerText = (codes==="00"||codes.includes("NO")) ? "✅ SIN FALLAS" : "⚠️ CÓDIGOS RAW: " + codes; mode = 'DASH'; }
+            if(d.startsWith("44")) { document.getElementById('dtcLog').innerText = "✅ BORRADO."; alert("¡BORRADOS!"); mode = 'DASH'; }
             if(d.startsWith("41")) {
-                let pid = d.substring(2,4);
-                let valHex = d.substring(4);
-                let val = parseOBD(pid, valHex);
-
-                // DASHBOARD
+                let pid = d.substring(2,4); let val = parseOBD(pid, d.substring(4));
                 if(pid === "0C") document.getElementById('rpmVal').innerText = val;
-                if(pid === "0D") document.getElementById('speedVal').innerText = val;
-                if(pid === "05") document.getElementById('tempVal').innerText = val;
-
-                // GRÁFICAS EN VIVO
                 let sel1 = document.getElementById('sel1').value.substring(2);
                 let sel2 = document.getElementById('sel2').value.substring(2);
-
-                if(pid === sel1) {
-                    document.getElementById('val1').innerText = val;
-                    updateChart(1, val);
-                }
-                if(pid === sel2) {
-                    document.getElementById('val2').innerText = val;
-                    updateChart(2, val);
-                }
+                if(pid === sel1) { document.getElementById('val1').innerText = val; updateChart(1, val); }
+                if(pid === sel2) { document.getElementById('val2').innerText = val; updateChart(2, val); }
             }
         }
 
-        // --- MATEMÁTICAS OBDII ---
         function parseOBD(pid, hex) {
             if(hex.length < 2) return 0;
-            let A = parseInt(hex.substring(0,2), 16);
-            let B = hex.length >= 4 ? parseInt(hex.substring(2,4), 16) : 0;
-
-            if(pid==="0C") return Math.round(((A*256)+B)/4); // RPM
-            if(pid==="0D") return A; // Speed
-            if(pid==="05" || pid==="0F") return A-40; // Temp
-            if(pid==="04" || pid==="11" || pid==="49" || pid==="4A") return Math.round((A*100)/255); // %, TPS, Load, APP
-            if(pid==="10") return ((A*256)+B)/100; // MAF g/s
-            if(pid==="0E") return (A/2)-64; // Timing
-            if(pid==="14") return A/200; // O2 Volts
-            if(pid==="42") return ((A*256)+B)/1000; // Voltaje Modulo
-            return A; 
+            let A = parseInt(hex.substring(0,2), 16); let B = hex.length >= 4 ? parseInt(hex.substring(2,4), 16) : 0;
+            if(pid==="0C") return Math.round(((A*256)+B)/4);
+            if(pid==="0D") return A;
+            if(pid==="05" || pid==="0F") return A-40;
+            if(pid==="04" || pid==="11" || pid==="49" || pid==="4A") return Math.round((A*100)/255);
+            if(pid==="10") return ((A*256)+B)/100;
+            if(pid==="0E") return (A/2)-64;
+            if(pid==="14") return A/200;
+            if(pid==="42") return ((A*256)+B)/1000;
+            return A;
         }
 
-        // --- GRÁFICAS ---
         function updateChart(id, val) {
-            let data = id===1 ? chartData1 : chartData2;
-            let ctx = id===1 ? ctx1 : ctx2;
-            data.push(val); data.shift();
-            ctx.clearRect(0,0,300,100);
-            ctx.beginPath(); ctx.strokeStyle='#0f0'; ctx.lineWidth=2;
-            let max = Math.max(...data, 10); // Autoescala simple
-            data.forEach((v,i) => {
-                let y = 100 - (v/max)*90; // Escalar a 100px altura
-                i==0 ? ctx.moveTo(i*6, y) : ctx.lineTo(i*6, y);
-            });
-            ctx.stroke();
+            let data = id===1 ? chartData1 : chartData2; let ctx = id===1 ? ctx1 : ctx2;
+            data.push(val); data.shift(); ctx.clearRect(0,0,300,100); ctx.beginPath(); ctx.strokeStyle='#0f0'; ctx.lineWidth=2;
+            let max = Math.max(...data, 10);
+            data.forEach((v,i) => { let y = 100 - (v/max)*90; i==0 ? ctx.moveTo(i*6, y) : ctx.lineTo(i*6, y); }); ctx.stroke();
         }
         function resetChart(id) { if(id===1) chartData1.fill(0); else chartData2.fill(0); }
 
-        // --- CONTROLADORES UI ---
         document.getElementById('nav-live').addEventListener('click', () => { mode = 'LIVE'; });
         document.getElementById('nav-dash').addEventListener('click', () => { mode = 'DASH'; });
-        document.getElementById('nav-dtc').addEventListener('click', () => { mode = 'DTC'; }); // Pausa lecturas
-
-        document.getElementById('btnReadDTC').addEventListener('click', async () => {
-            mode = 'DTC'; // Pausar gráficas
-            document.getElementById('dtcLog').innerText = "⏳ LEYENDO...";
-            await wait(1000);
-            send("03");
-        });
-
-        document.getElementById('btnEraseDTC').addEventListener('click', async () => {
-            if(confirm("¿BORRAR CÓDIGOS? El motor debe estar apagado (Switch ON).")) {
-                mode = 'DTC';
-                document.getElementById('dtcLog').innerText = "⏳ BORRANDO...";
-                await wait(1000);
-                send("04");
-            }
-        });
-
-        // DIAGRAMAS
+        document.getElementById('nav-dtc').addEventListener('click', () => { mode = 'DTC'; });
+        document.getElementById('nav-school').addEventListener('click', () => { mode = 'SCHOOL'; });
+        document.getElementById('btnReadDTC').addEventListener('click', async () => { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ LEYENDO..."; await wait(1000); send("03"); });
+        document.getElementById('btnEraseDTC').addEventListener('click', async () => { if(confirm("¿BORRAR?")) { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ BORRANDO..."; await wait(1000); send("04"); } });
+        
         const dbDiag = [{ nombre: "PINOUT CHEVY C2", archivo: "IMG_20260207_010441.jpg" }, { nombre: "ALTERNADOR NISSAN", archivo: "IMG_20260207_010417.jpg" }];
         const diagList = document.getElementById('diagList');
         function renderDiag() { diagList.innerHTML=""; dbDiag.forEach(d=>{ diagList.innerHTML+=`<div class="diag-card"><span style="color:#fff">${d.nombre}</span><button class="btn-mini" onclick="document.getElementById('modalImg').src='${d.archivo}';document.getElementById('imgModal').style.display='flex'">VER</button></div>`}); }
