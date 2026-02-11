@@ -2,15 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V113 - CONEXION FIX</title>
+    <title>PROPART V115 - DESBLOQUEADO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
         /* BLOQUEO */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        #lockScreen h1 { color: #f00; font-size: 40px; }
-        .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; text-decoration: none; margin-top: 20px; }
+        #lockScreen h1 { color: #f00; font-size: 40px; margin: 0; }
+        .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; text-decoration: none; margin-top: 20px; font-size: 20px; }
 
         /* LEGAL */
         #legalModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
@@ -24,32 +24,21 @@
         .page { display: none; padding: 10px; padding-bottom: 90px; }
         .page.active { display: block; }
 
-        /* ESTILOS ESCUELA */
+        /* ESTILOS GENERALES */
         details { background: #111; border: 1px solid #333; margin-bottom: 10px; border-radius: 5px; text-align: left; }
         summary { padding: 15px; cursor: pointer; font-weight: bold; color: #fff; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        summary::after { content: '+'; color: #0f0; font-weight: bold; font-size: 20px; }
-        details[open] summary::after { content: '-'; color: #f00; }
         .lesson-content { padding: 15px; color: #ccc; font-size: 14px; line-height: 1.6; border-top: 1px solid #333; background: #050505; }
         .highlight { color: #ff0; font-weight: bold; }
-
-        /* GRÁFICAS */
         .chart-box { background: #111; border: 1px solid #333; margin-bottom: 10px; padding: 5px; border-radius: 5px; }
         canvas { width: 100%; height: 100px; background: #000; border-bottom: 1px solid #0f0; }
         select { width: 100%; background: #222; color: #fff; padding: 10px; border: 1px solid #0f0; font-family: monospace; font-size: 16px; margin-bottom: 5px; }
         .val-display { font-size: 24px; font-weight: bold; color: #ff0; text-align: right; display: block; }
-
-        /* TABLERO */
         .gauge-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
         .gauge { width: 100px; height: 100px; border: 2px solid #0f0; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 10px #0f0; }
-        .gauge h1 { font-size: 25px; margin: 0; }
-        .gauge span { font-size: 10px; opacity: 0.7; }
-
-        /* BOTONES */
         .btn-action { background: #0f0; color: #000; padding: 15px; width: 90%; font-weight: bold; border-radius: 50px; font-size: 18px; border: none; margin: 10px 0; box-shadow: 0 0 15px #0f0; cursor: pointer; }
         .btn-danger { background: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
         .diag-card { background: #111; border: 1px solid #333; padding: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .btn-mini { background: #0f0; border: none; padding: 5px 10px; font-weight: bold; cursor: pointer; }
-        
         #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
         #imgModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
         #imgModal img { max-width: 95%; max-height: 80%; border: 2px solid #0f0; }
@@ -58,7 +47,12 @@
 </head>
 <body>
 
-    <div id="lockScreen"><h1>🔒 BLOQUEADO</h1><p>LICENCIA VENCIDA</p><a href="#" class="btn-whatsapp">RENOVAR</a></div>
+    <div id="lockScreen">
+        <h1>🔒 BLOQUEADO</h1>
+        <p>LICENCIA VENCIDA</p>
+        <a href="https://wa.me/521777XXXXXXX?text=Quiero%20Renovar" class="btn-whatsapp">📲 RENOVAR</a>
+    </div>
+
     <div id="legalModal"><div class="legal-box"><h2>⚠️ AVISO</h2><p>Herramienta de referencia. No nos hacemos responsables.</p><button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button></div></div>
 
     <div id="p-dash" class="page">
@@ -116,17 +110,19 @@
         <details>
             <summary>CAP 1: ELECTRICIDAD BÁSICA ⚡</summary>
             <div class="lesson-content">
-                <p><span class="highlight">VOLTAJE (V):</span> PRESIÓN. 12V es para actuadores, 5V para sensores. No mezclar.</p>
-                <p><span class="highlight">AMPERAJE (A):</span> CANTIDAD. Esto quema cables. Corto = Mucho amperaje.</p>
-                <p><span class="highlight">RESISTENCIA (Ω):</span> TAPÓN. Tierras sucias = Resistencia alta.</p>
+                <p><span class="highlight">VOLTAJE (V):</span> PRESIÓN. 12V vs 5V.</p>
+                <p><span class="highlight">AMPERAJE (A):</span> CANTIDAD. Produce calor.</p>
+                <p><span class="highlight">RESISTENCIA (Ω):</span> TAPÓN. Tierras sucias.</p>
+                [Image of multimeter checking ground voltage drop car engine]
             </div>
         </details>
-        <details open>
+        <details>
             <summary>CAP 2: ANATOMÍA ECU 🧠</summary>
             <div class="lesson-content">
-                <p><strong>1. DRIVERS:</strong> Transistores grandes. Disparan bobinas/inyectores.</p>
-                <p><strong>2. CAPACITORES:</strong> Botes que filtran voltaje. Si están inflados, fallan.</p>
+                <p><strong>1. DRIVERS:</strong> Transistores grandes. Disparan bobinas.</p>
+                <p><strong>2. CAPACITORES:</strong> Botes que filtran voltaje.</p>
                 <p><strong>3. MEMORIAS:</strong> EEPROM (Llaves) y FLASH (Mapas).</p>
+                [Image of ECU circuit board components diagram]
             </div>
         </details>
     </div>
@@ -149,9 +145,16 @@
     </nav>
 
     <script>
-        // CONFIG
-        const fechaVencimiento = new Date(2026, 2, 1);
-        if (new Date() > fechaVencimiento) document.getElementById('lockScreen').style.display = 'flex';
+        // === ZONA DE CONTROL DE VENCIMIENTO ===
+        // Aquí le damos vida otra vez. Año 2026.
+        const fechaVencimiento = new Date(2026, 2, 1); 
+        
+        // Verifica si ya venció
+        if (new Date() > fechaVencimiento) {
+            document.getElementById('lockScreen').style.display = 'flex';
+        }
+
+        // LEGAL
         if (!localStorage.getItem('legalAccepted')) document.getElementById('legalModal').style.display = 'flex';
         else document.getElementById('legalModal').style.display = 'none';
         function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; }
@@ -166,7 +169,7 @@
         }
         nav('p-dash');
 
-        // --- BLUETOOTH CORE (CORREGIDO) ---
+        // BLUETOOTH CORE (CONEXIÓN SEGURA V113)
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop;
         let mode = 'DASH';
@@ -175,51 +178,4 @@
 
         // GRÁFICAS
         const ctx1 = document.getElementById('chart1').getContext('2d');
-        const ctx2 = document.getElementById('chart2').getContext('2d');
-        let chartData1 = new Array(50).fill(0);
-        let chartData2 = new Array(50).fill(0);
-
-        document.getElementById('btnConnect').addEventListener('click', async () => {
-            try {
-                document.getElementById('status').innerText="Buscando...";
-                const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS });
-                const s = await d.gatt.connect();
-                for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} }
-                const c = await service.getCharacteristics();
-                for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; }
-                await notifyChar.startNotifications();
-                notifyChar.addEventListener('characteristicvaluechanged', handleData);
-                
-                document.getElementById('status').innerText="✅ CONECTADO";
-                document.getElementById('btnConnect').style.display='none';
-                
-                // INICIO (Secuencial y lento para seguridad)
-                await send("AT Z"); await wait(300);
-                await send("AT SP0"); await wait(300);
-                await send("AT E0"); await wait(300);
-                
-                startLoop();
-            } catch(e){ alert("Error: " + e); }
-        });
-
-        async function startLoop() {
-            loop = setInterval(() => {
-                // WATCHDOG: Si pasaron 1.5s sin respuesta, liberar semáforo
-                if(busy && (Date.now() - lastResponseTime > 1500)) { 
-                    busy = false; 
-                }
-
-                if(busy) return; // Si está ocupado, espera.
-
-                if(mode === 'DASH') {
-                    send("010C"); // Solo RPM en Dashboard
-                } 
-                else if (mode === 'LIVE') {
-                    // Alternar petición
-                    let pid = (Date.now() % 2 === 0) ? document.getElementById('sel1').value : document.getElementById('sel2').value;
-                    send(pid);
-                }
-            }, 300); // 300ms entre peticiones
-        }
-
-        async function send(cmd
+        const ctx2 =
