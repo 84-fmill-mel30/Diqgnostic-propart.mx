@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V112 - ACADEMY 2</title>
+    <title>PROPART V113 - CONEXION FIX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
@@ -44,15 +44,16 @@
         .gauge h1 { font-size: 25px; margin: 0; }
         .gauge span { font-size: 10px; opacity: 0.7; }
 
-        /* DIAGRAMAS Y OTROS */
+        /* BOTONES */
         .btn-action { background: #0f0; color: #000; padding: 15px; width: 90%; font-weight: bold; border-radius: 50px; font-size: 18px; border: none; margin: 10px 0; box-shadow: 0 0 15px #0f0; cursor: pointer; }
         .btn-danger { background: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
         .diag-card { background: #111; border: 1px solid #333; padding: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .btn-mini { background: #0f0; border: none; padding: 5px 10px; font-weight: bold; cursor: pointer; }
+        
+        #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
         #imgModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
         #imgModal img { max-width: 95%; max-height: 80%; border: 2px solid #0f0; }
         #closeModal { margin-top: 20px; padding: 10px 30px; background: #f00; color: #fff; border: none; font-size: 18px; }
-        #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -62,7 +63,7 @@
 
     <div id="p-dash" class="page">
         <h2>🏎️ TABLERO</h2>
-        <div id="status" style="font-size:12px; color:#aaa;">Desconectado</div>
+        <div id="status" style="font-size:12px; color:#aaa;">Listo para conectar</div>
         <div class="gauge-row">
             <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
             <div class="gauge"><span>KM/H</span><h1 id="speedVal">0</h1></div>
@@ -104,7 +105,7 @@
 
     <div id="p-dtc" class="page">
         <h2>💀 ESCÁNER FALLAS</h2>
-        <div style="background:#220; color:#ff0; padding:10px; font-size:12px; margin-bottom:10px;">⚠️ Motor apagado, Switch abierto.</div>
+        <div style="background:#220; color:#ff0; padding:10px; font-size:12px; margin-bottom:10px;">⚠️ Switch ON, Motor OFF.</div>
         <button id="btnReadDTC" class="btn-action" style="background:#ff0;">🔍 LEER CÓDIGOS</button>
         <button id="btnEraseDTC" class="btn-action btn-danger">🧹 BORRAR CÓDIGOS</button>
         <div id="dtcLog">Esperando...</div>
@@ -112,33 +113,20 @@
 
     <div id="p-school" class="page">
         <h2>🎓 MANUAL PROPART</h2>
-        <p style="font-size:12px; color:#aaa;">Tu guía de estudio personal.</p>
-
         <details>
             <summary>CAP 1: ELECTRICIDAD BÁSICA ⚡</summary>
             <div class="lesson-content">
-                <p><span class="highlight">VOLTAJE (V):</span> PRESIÓN. 12V es para actuadores, 5V para sensores/chips.</p>
-                <p><span class="highlight">AMPERAJE (A):</span> CAUDAL. Esto calienta cables. Corto circuito = Mucho amperaje.</p>
-                <p><span class="highlight">RESISTENCIA (Ω):</span> TAPÓN. Tierras sucias crean resistencia y fallas.</p>
-                <p style="border:1px solid #f00; padding:5px; color:#f55;">¡REVISA TIERRAS! Multímetro 20V: Punta Negra a Batería(-), Punta Roja a Motor. Si marca > 0.30V, limpia la tierra.</p>
+                <p><span class="highlight">VOLTAJE (V):</span> PRESIÓN. 12V es para actuadores, 5V para sensores. No mezclar.</p>
+                <p><span class="highlight">AMPERAJE (A):</span> CANTIDAD. Esto quema cables. Corto = Mucho amperaje.</p>
+                <p><span class="highlight">RESISTENCIA (Ω):</span> TAPÓN. Tierras sucias = Resistencia alta.</p>
             </div>
         </details>
-
         <details open>
             <summary>CAP 2: ANATOMÍA ECU 🧠</summary>
             <div class="lesson-content">
-                <p>¿Qué hay adentro de la computadora?</p>
-                <p><strong>1. LOS DRIVERS (Transistores):</strong><br>Son los "músculos". Transistores grandes pegados a la orilla. Ellos disparan Bobinas e Inyectores. Si no hay pulso, checa estos primero.</p>
-                <p><strong>2. CAPACITORES (Botes):</strong><br>Son filtros. Si están inflados como palomitas, cámbialos. Provocan que la ECU se apague sola.</p>
-                <p><strong>3. REGULADOR 5V:</strong><br>Convierte los 12V de la batería en 5V para el cerebro. Si falla, la ECU muere totalmente.</p>
-                <p><strong>4. MEMORIAS (El Tesoro):</strong><br>EEPROM (Chica, 8 patas) = Llaves/Immo.<br>FLASH (Grande, muchas patas) = Mapas/Potencia.</p>
-            </div>
-        </details>
-
-        <details>
-            <summary>CAP 3: MEMORIAS (PRÓXIMAMENTE) 💾</summary>
-            <div class="lesson-content">
-                <p>Aquí veremos cómo leer la EEPROM con pinzas SOIC8.</p>
+                <p><strong>1. DRIVERS:</strong> Transistores grandes. Disparan bobinas/inyectores.</p>
+                <p><strong>2. CAPACITORES:</strong> Botes que filtran voltaje. Si están inflados, fallan.</p>
+                <p><strong>3. MEMORIAS:</strong> EEPROM (Llaves) y FLASH (Mapas).</p>
             </div>
         </details>
     </div>
@@ -178,7 +166,7 @@
         }
         nav('p-dash');
 
-        // BLUETOOTH CORE
+        // --- BLUETOOTH CORE (CORREGIDO) ---
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop;
         let mode = 'DASH';
@@ -193,7 +181,7 @@
 
         document.getElementById('btnConnect').addEventListener('click', async () => {
             try {
-                document.getElementById('status').innerText="Conectando...";
+                document.getElementById('status').innerText="Buscando...";
                 const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS });
                 const s = await d.gatt.connect();
                 for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} }
@@ -201,81 +189,37 @@
                 for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; }
                 await notifyChar.startNotifications();
                 notifyChar.addEventListener('characteristicvaluechanged', handleData);
+                
                 document.getElementById('status').innerText="✅ CONECTADO";
                 document.getElementById('btnConnect').style.display='none';
-                await send("AT Z"); await wait(500); await send("AT SP0"); await wait(500); await send("AT E0"); await wait(500);
+                
+                // INICIO (Secuencial y lento para seguridad)
+                await send("AT Z"); await wait(300);
+                await send("AT SP0"); await wait(300);
+                await send("AT E0"); await wait(300);
+                
                 startLoop();
-            } catch(e){ alert("Error conectando: " + e); }
+            } catch(e){ alert("Error: " + e); }
         });
 
         async function startLoop() {
             loop = setInterval(() => {
-                if(busy && (Date.now() - lastResponseTime > 2000)) { busy = false; }
-                if(busy) return;
-                if(mode === 'DASH') send("010C");
-                else if (mode === 'LIVE') { let pid = (Date.now() % 2 === 0) ? document.getElementById('sel1').value : document.getElementById('sel2').value; send(pid); }
-            }, 500);
+                // WATCHDOG: Si pasaron 1.5s sin respuesta, liberar semáforo
+                if(busy && (Date.now() - lastResponseTime > 1500)) { 
+                    busy = false; 
+                }
+
+                if(busy) return; // Si está ocupado, espera.
+
+                if(mode === 'DASH') {
+                    send("010C"); // Solo RPM en Dashboard
+                } 
+                else if (mode === 'LIVE') {
+                    // Alternar petición
+                    let pid = (Date.now() % 2 === 0) ? document.getElementById('sel1').value : document.getElementById('sel2').value;
+                    send(pid);
+                }
+            }, 300); // 300ms entre peticiones
         }
 
-        async function send(cmd) { 
-            if(writeChar && !busy) {
-                busy = true; lastResponseTime = Date.now();
-                try { await writeChar.writeValue(new TextEncoder().encode(cmd + '\r')); } catch(e) { busy = false; }
-            }
-        }
-        function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-        function handleData(ev) {
-            busy = false; lastResponseTime = Date.now();
-            let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim();
-            if(d.includes(">") || d.includes("STOPPED")) return;
-            if(d.startsWith("43")) { let codes = d.substring(2); document.getElementById('dtcLog').innerText = (codes==="00"||codes.includes("NO")) ? "✅ SIN FALLAS" : "⚠️ CÓDIGOS RAW: " + codes; mode = 'DASH'; }
-            if(d.startsWith("44")) { document.getElementById('dtcLog').innerText = "✅ BORRADO."; alert("¡BORRADOS!"); mode = 'DASH'; }
-            if(d.startsWith("41")) {
-                let pid = d.substring(2,4); let val = parseOBD(pid, d.substring(4));
-                if(pid === "0C") document.getElementById('rpmVal').innerText = val;
-                let sel1 = document.getElementById('sel1').value.substring(2);
-                let sel2 = document.getElementById('sel2').value.substring(2);
-                if(pid === sel1) { document.getElementById('val1').innerText = val; updateChart(1, val); }
-                if(pid === sel2) { document.getElementById('val2').innerText = val; updateChart(2, val); }
-            }
-        }
-
-        function parseOBD(pid, hex) {
-            if(hex.length < 2) return 0;
-            let A = parseInt(hex.substring(0,2), 16); let B = hex.length >= 4 ? parseInt(hex.substring(2,4), 16) : 0;
-            if(pid==="0C") return Math.round(((A*256)+B)/4);
-            if(pid==="0D") return A;
-            if(pid==="05" || pid==="0F") return A-40;
-            if(pid==="04" || pid==="11" || pid==="49" || pid==="4A") return Math.round((A*100)/255);
-            if(pid==="10") return ((A*256)+B)/100;
-            if(pid==="0E") return (A/2)-64;
-            if(pid==="14") return A/200;
-            if(pid==="42") return ((A*256)+B)/1000;
-            return A;
-        }
-
-        function updateChart(id, val) {
-            let data = id===1 ? chartData1 : chartData2; let ctx = id===1 ? ctx1 : ctx2;
-            data.push(val); data.shift(); ctx.clearRect(0,0,300,100); ctx.beginPath(); ctx.strokeStyle='#0f0'; ctx.lineWidth=2;
-            let max = Math.max(...data, 10);
-            data.forEach((v,i) => { let y = 100 - (v/max)*90; i==0 ? ctx.moveTo(i*6, y) : ctx.lineTo(i*6, y); }); ctx.stroke();
-        }
-        function resetChart(id) { if(id===1) chartData1.fill(0); else chartData2.fill(0); }
-
-        document.getElementById('nav-live').addEventListener('click', () => { mode = 'LIVE'; });
-        document.getElementById('nav-dash').addEventListener('click', () => { mode = 'DASH'; });
-        document.getElementById('nav-dtc').addEventListener('click', () => { mode = 'DTC'; });
-        document.getElementById('nav-school').addEventListener('click', () => { mode = 'SCHOOL'; });
-        document.getElementById('btnReadDTC').addEventListener('click', async () => { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ LEYENDO..."; await wait(1000); send("03"); });
-        document.getElementById('btnEraseDTC').addEventListener('click', async () => { if(confirm("¿BORRAR?")) { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ BORRANDO..."; await wait(1000); send("04"); } });
-        
-        const dbDiag = [{ nombre: "PINOUT CHEVY C2", archivo: "IMG_20260207_010441.jpg" }, { nombre: "ALTERNADOR NISSAN", archivo: "IMG_20260207_010417.jpg" }];
-        const diagList = document.getElementById('diagList');
-        function renderDiag() { diagList.innerHTML=""; dbDiag.forEach(d=>{ diagList.innerHTML+=`<div class="diag-card"><span style="color:#fff">${d.nombre}</span><button class="btn-mini" onclick="document.getElementById('modalImg').src='${d.archivo}';document.getElementById('imgModal').style.display='flex'">VER</button></div>`}); }
-        renderDiag();
-        function buscarManual() { let c=document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?q=filetype:pdf+diagrama+electrico+taller+' + c, '_blank'); }
-        function closeImg() { document.getElementById('imgModal').style.display = "none"; }
-    </script>
-</body>
-</html>
+        async function send(cmd
