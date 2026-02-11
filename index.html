@@ -2,20 +2,38 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V115 - DESBLOQUEADO</title>
+    <title>PROPART V116 - FIX FINAL</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script>
+        // --- FUNCIÓN DE DESBLOQUEO DE EMERGENCIA (EN EL HEAD) ---
+        function forzarEntrada() {
+            // Intenta guardar, si falla, no importa, te deja pasar
+            try { localStorage.setItem('legalAccepted', 'true'); } catch(e) {}
+            
+            // Desaparece los bloqueos a la fuerza
+            var legal = document.getElementById('legalModal');
+            var lock = document.getElementById('lockScreen');
+            if(legal) legal.style.display = 'none';
+            if(lock) lock.style.display = 'none';
+            
+            // Activa el Dashboard
+            document.getElementById('p-dash').style.display = 'block';
+        }
+    </script>
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* BLOQUEO */
-        #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        #lockScreen h1 { color: #f00; font-size: 40px; margin: 0; }
-        .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border: none; border-radius: 50px; font-weight: bold; text-decoration: none; margin-top: 20px; font-size: 20px; }
-
-        /* LEGAL */
-        #legalModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .legal-box { border: 2px solid #f00; padding: 20px; border-radius: 10px; background: #111; max-height: 80vh; overflow-y: auto; }
-        #btnAccept { background: #f00; color: #fff; width: 100%; padding: 15px; font-weight: bold; border: none; margin-top: 10px; }
+        /* BLOQUEOS */
+        #lockScreen, #legalModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        #lockScreen { background: #000; }
+        #legalModal { background: rgba(0,0,0,0.95); }
+        
+        .legal-box { border: 2px solid #f00; padding: 20px; border-radius: 10px; background: #111; max-width: 80%; }
+        .legal-box h2 { color: #f00; margin-top: 0; }
+        .legal-box p { color: #0f0; font-size: 12px; text-align: justify; }
+        
+        #btnAccept { background: #f00; color: #fff; width: 100%; padding: 15px; font-weight: bold; border: none; margin-top: 15px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+        .btn-whatsapp { background: #25D366; color: #fff; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 20px; display: inline-block; }
 
         /* NAVEGACIÓN */
         nav { position: fixed; bottom: 0; width: 100%; background: #111; border-top: 1px solid #0f0; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
@@ -25,21 +43,23 @@
         .page.active { display: block; }
 
         /* ESTILOS GENERALES */
-        details { background: #111; border: 1px solid #333; margin-bottom: 10px; border-radius: 5px; text-align: left; }
-        summary { padding: 15px; cursor: pointer; font-weight: bold; color: #fff; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        .lesson-content { padding: 15px; color: #ccc; font-size: 14px; line-height: 1.6; border-top: 1px solid #333; background: #050505; }
-        .highlight { color: #ff0; font-weight: bold; }
+        .btn-action { background: #0f0; color: #000; padding: 15px; width: 90%; font-weight: bold; border-radius: 50px; font-size: 18px; border: none; margin: 10px 0; box-shadow: 0 0 15px #0f0; cursor: pointer; }
+        .btn-danger { background: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
+        .gauge-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .gauge { width: 100px; height: 100px; border: 2px solid #0f0; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 10px #0f0; }
+        .gauge h1 { font-size: 25px; margin: 0; }
         .chart-box { background: #111; border: 1px solid #333; margin-bottom: 10px; padding: 5px; border-radius: 5px; }
         canvas { width: 100%; height: 100px; background: #000; border-bottom: 1px solid #0f0; }
         select { width: 100%; background: #222; color: #fff; padding: 10px; border: 1px solid #0f0; font-family: monospace; font-size: 16px; margin-bottom: 5px; }
         .val-display { font-size: 24px; font-weight: bold; color: #ff0; text-align: right; display: block; }
-        .gauge-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .gauge { width: 100px; height: 100px; border: 2px solid #0f0; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 10px #0f0; }
-        .btn-action { background: #0f0; color: #000; padding: 15px; width: 90%; font-weight: bold; border-radius: 50px; font-size: 18px; border: none; margin: 10px 0; box-shadow: 0 0 15px #0f0; cursor: pointer; }
-        .btn-danger { background: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
+        details { background: #111; border: 1px solid #333; margin-bottom: 10px; border-radius: 5px; text-align: left; }
+        summary { padding: 15px; cursor: pointer; font-weight: bold; color: #fff; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .lesson-content { padding: 15px; color: #ccc; font-size: 14px; line-height: 1.6; border-top: 1px solid #333; background: #050505; }
+        .highlight { color: #ff0; font-weight: bold; }
+        #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
+        
         .diag-card { background: #111; border: 1px solid #333; padding: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .btn-mini { background: #0f0; border: none; padding: 5px 10px; font-weight: bold; cursor: pointer; }
-        #dtcLog { text-align: left; background: #111; color: #f55; padding: 10px; min-height: 100px; border: 1px solid #500; margin-top: 10px; white-space: pre-wrap; font-size: 14px; }
         #imgModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
         #imgModal img { max-width: 95%; max-height: 80%; border: 2px solid #0f0; }
         #closeModal { margin-top: 20px; padding: 10px 30px; background: #f00; color: #fff; border: none; font-size: 18px; }
@@ -50,21 +70,27 @@
     <div id="lockScreen">
         <h1>🔒 BLOQUEADO</h1>
         <p>LICENCIA VENCIDA</p>
-        <a href="https://wa.me/521777XXXXXXX?text=Quiero%20Renovar" class="btn-whatsapp">📲 RENOVAR</a>
+        <a href="https://wa.me/521777XXXXXXX?text=Renovar" class="btn-whatsapp">RENOVAR</a>
     </div>
 
-    <div id="legalModal"><div class="legal-box"><h2>⚠️ AVISO</h2><p>Herramienta de referencia. No nos hacemos responsables.</p><button id="btnAccept" onclick="acceptLegal()">ACEPTAR</button></div></div>
+    <div id="legalModal">
+        <div class="legal-box">
+            <h2>⚠️ AVISO</h2>
+            <p>Herramienta de referencia técnica.</p>
+            <p>No nos hacemos responsables por daños.</p>
+            <button id="btnAccept" onclick="forzarEntrada()">ACEPTAR</button>
+        </div>
+    </div>
 
-    <div id="p-dash" class="page">
+    <div id="p-dash" class="page" style="display:block;">
         <h2>🏎️ TABLERO</h2>
-        <div id="status" style="font-size:12px; color:#aaa;">Listo para conectar</div>
+        <div id="status" style="font-size:12px; color:#aaa;">Listo</div>
         <div class="gauge-row">
             <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
             <div class="gauge"><span>KM/H</span><h1 id="speedVal">0</h1></div>
             <div class="gauge"><span>TEMP</span><h1 id="tempVal">--</h1></div>
         </div>
         <button id="btnConnect" class="btn-action">🔌 CONECTAR OBDII</button>
-        <p style="font-size:10px; color:#666;">Ve a 📈 para ver sensores en vivo.</p>
     </div>
 
     <div id="p-live" class="page">
@@ -73,14 +99,9 @@
             <select id="sel1" onchange="resetChart(1)">
                 <option value="010C">RPM Motor</option>
                 <option value="010D">Velocidad</option>
-                <option value="0104">Carga Motor %</option>
                 <option value="0105">Temp Agua</option>
-                <option value="010F">Temp Aire</option>
                 <option value="0111">TPS Mariposa %</option>
-                <option value="0110">MAF (g/s)</option>
-                <option value="010E">Avance Tiempo</option>
-                <option value="0114">O2 Sensor 1 (V)</option>
-                <option value="0142">Voltaje Modulo</option>
+                <option value="0114">O2 Sensor (V)</option>
             </select>
             <span id="val1" class="val-display">0</span>
             <canvas id="chart1"></canvas>
@@ -89,8 +110,6 @@
             <select id="sel2" onchange="resetChart(2)">
                 <option value="0111" selected>TPS Mariposa %</option>
                 <option value="010C">RPM Motor</option>
-                <option value="0114">O2 Sensor 1 (V)</option>
-                <option value="0105">Temp Agua</option>
             </select>
             <span id="val2" class="val-display">0</span>
             <canvas id="chart2"></canvas>
@@ -99,7 +118,6 @@
 
     <div id="p-dtc" class="page">
         <h2>💀 ESCÁNER FALLAS</h2>
-        <div style="background:#220; color:#ff0; padding:10px; font-size:12px; margin-bottom:10px;">⚠️ Switch ON, Motor OFF.</div>
         <button id="btnReadDTC" class="btn-action" style="background:#ff0;">🔍 LEER CÓDIGOS</button>
         <button id="btnEraseDTC" class="btn-action btn-danger">🧹 BORRAR CÓDIGOS</button>
         <div id="dtcLog">Esperando...</div>
@@ -108,21 +126,18 @@
     <div id="p-school" class="page">
         <h2>🎓 MANUAL PROPART</h2>
         <details>
-            <summary>CAP 1: ELECTRICIDAD BÁSICA ⚡</summary>
+            <summary>CAP 1: ELECTRICIDAD ⚡</summary>
             <div class="lesson-content">
-                <p><span class="highlight">VOLTAJE (V):</span> PRESIÓN. 12V vs 5V.</p>
-                <p><span class="highlight">AMPERAJE (A):</span> CANTIDAD. Produce calor.</p>
-                <p><span class="highlight">RESISTENCIA (Ω):</span> TAPÓN. Tierras sucias.</p>
-                [Image of multimeter checking ground voltage drop car engine]
+                <p><span class="highlight">VOLTAJE:</span> Presión (12V/5V).</p>
+                <p><span class="highlight">AMPERAJE:</span> Cantidad (Calor).</p>
+                <p><span class="highlight">TIERRAS:</span> Revisar con multímetro.</p>
             </div>
         </details>
         <details>
-            <summary>CAP 2: ANATOMÍA ECU 🧠</summary>
+            <summary>CAP 2: ECU 🧠</summary>
             <div class="lesson-content">
-                <p><strong>1. DRIVERS:</strong> Transistores grandes. Disparan bobinas.</p>
-                <p><strong>2. CAPACITORES:</strong> Botes que filtran voltaje.</p>
-                <p><strong>3. MEMORIAS:</strong> EEPROM (Llaves) y FLASH (Mapas).</p>
-                [Image of ECU circuit board components diagram]
+                <p><strong>DRIVERS:</strong> Disparan bobinas.</p>
+                <p><strong>MEMORIAS:</strong> EEPROM (Llaves) y FLASH (Mapas).</p>
             </div>
         </details>
     </div>
@@ -131,7 +146,7 @@
         <h2>📂 DIAGRAMAS</h2>
         <input type="text" id="autoInput" placeholder="Ej: Jetta A4" style="width:70%; padding:10px;">
         <button onclick="buscarManual()" class="btn-mini">📄 PDF</button>
-        <div style="margin-top:20px; border-top:1px solid #333; padding-top:10px;" id="diagList"></div>
+        <div style="margin-top:20px;" id="diagList"></div>
     </div>
 
     <div id="imgModal"><img id="modalImg" src=""><button id="closeModal" onclick="closeImg()">CERRAR ❌</button></div>
@@ -145,21 +160,27 @@
     </nav>
 
     <script>
-        // === ZONA DE CONTROL DE VENCIMIENTO ===
-        // Aquí le damos vida otra vez. Año 2026.
-        const fechaVencimiento = new Date(2026, 2, 1); 
+        // --- LÓGICA DE INICIO ---
+        const fechaVencimiento = new Date(2026, 2, 1);
         
-        // Verifica si ya venció
+        // 1. CHECAR SI VENCIÓ
         if (new Date() > fechaVencimiento) {
             document.getElementById('lockScreen').style.display = 'flex';
         }
 
-        // LEGAL
-        if (!localStorage.getItem('legalAccepted')) document.getElementById('legalModal').style.display = 'flex';
-        else document.getElementById('legalModal').style.display = 'none';
-        function acceptLegal() { localStorage.setItem('legalAccepted', 'true'); document.getElementById('legalModal').style.display = 'none'; }
+        // 2. CHECAR SI YA ACEPTÓ EL LEGAL (CON TRY-CATCH)
+        try {
+            if (!localStorage.getItem('legalAccepted')) {
+                document.getElementById('legalModal').style.display = 'flex';
+            } else {
+                document.getElementById('legalModal').style.display = 'none';
+            }
+        } catch(e) {
+            // Si falla la memoria, mostramos el aviso por si acaso
+            document.getElementById('legalModal').style.display = 'flex';
+        }
 
-        // UTILS
+        // --- NAVEGACIÓN ---
         function nav(p) {
             document.querySelectorAll('.page').forEach(x => x.style.display='none');
             document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
@@ -167,15 +188,95 @@
             document.getElementById('nav-'+p.split('-')[1]).classList.add('active');
             if(p !== 'p-live') { chartData1.fill(0); chartData2.fill(0); }
         }
-        nav('p-dash');
 
-        // BLUETOOTH CORE (CONEXIÓN SEGURA V113)
+        // --- BLUETOOTH CORE ---
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
-        let service, writeChar, notifyChar, loop;
-        let mode = 'DASH';
-        let busy = false;
-        let lastResponseTime = 0;
+        let service, writeChar, notifyChar, loop, mode = 'DASH', busy = false, lastResponseTime = 0;
 
         // GRÁFICAS
         const ctx1 = document.getElementById('chart1').getContext('2d');
-        const ctx2 =
+        const ctx2 = document.getElementById('chart2').getContext('2d');
+        let chartData1 = new Array(50).fill(0);
+        let chartData2 = new Array(50).fill(0);
+
+        document.getElementById('btnConnect').addEventListener('click', async () => {
+            try {
+                document.getElementById('status').innerText="Conectando...";
+                const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS });
+                const s = await d.gatt.connect();
+                for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} }
+                const c = await service.getCharacteristics();
+                for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; }
+                await notifyChar.startNotifications();
+                notifyChar.addEventListener('characteristicvaluechanged', handleData);
+                document.getElementById('status').innerText="✅ CONECTADO";
+                document.getElementById('btnConnect').style.display='none';
+                await send("AT Z"); await wait(300); await send("AT SP0"); await wait(300); await send("AT E0"); await wait(300);
+                startLoop();
+            } catch(e){ alert("Error: " + e); }
+        });
+
+        async function startLoop() {
+            loop = setInterval(() => {
+                if(busy && (Date.now() - lastResponseTime > 1500)) busy = false;
+                if(busy) return;
+                if(mode === 'DASH') send("010C");
+                else if (mode === 'LIVE') { let pid = (Date.now() % 2 === 0) ? document.getElementById('sel1').value : document.getElementById('sel2').value; send(pid); }
+            }, 300);
+        }
+
+        async function send(cmd) { 
+            if(writeChar && !busy) { busy = true; lastResponseTime = Date.now(); try { await writeChar.writeValue(new TextEncoder().encode(cmd + '\r')); } catch(e) { busy = false; } }
+        }
+        function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        function handleData(ev) {
+            busy = false; lastResponseTime = Date.now();
+            let d = new TextDecoder().decode(ev.target.value).replace(/\s/g,'').trim();
+            if(d.includes(">") || d.length < 2) return;
+            if(d.startsWith("43")) { let codes = d.substring(2); document.getElementById('dtcLog').innerText = (codes==="00"||codes.includes("NO")) ? "✅ LIMPIO" : "⚠️ CÓDIGOS: " + codes; mode = 'DASH'; }
+            if(d.startsWith("44")) { document.getElementById('dtcLog').innerText = "✅ BORRADO."; alert("¡Borrado!"); mode = 'DASH'; }
+            if(d.startsWith("41")) {
+                let pid = d.substring(2,4); let val = parseOBD(pid, d.substring(4));
+                if(pid === "0C") document.getElementById('rpmVal').innerText = val;
+                let sel1 = document.getElementById('sel1').value.substring(2); let sel2 = document.getElementById('sel2').value.substring(2);
+                if(pid === sel1) { document.getElementById('val1').innerText = val; updateChart(1, val); }
+                if(pid === sel2) { document.getElementById('val2').innerText = val; updateChart(2, val); }
+            }
+        }
+
+        function parseOBD(pid, hex) {
+            if(hex.length < 2) return 0;
+            let A = parseInt(hex.substring(0,2), 16); let B = hex.length >= 4 ? parseInt(hex.substring(2,4), 16) : 0;
+            if(pid==="0C") return Math.round(((A*256)+B)/4);
+            if(pid==="0D") return A;
+            if(pid==="05") return A-40;
+            if(pid==="11" || pid==="04") return Math.round((A*100)/255);
+            if(pid==="14") return A/200;
+            return A;
+        }
+
+        function updateChart(id, val) {
+            let data = id===1 ? chartData1 : chartData2; let ctx = id===1 ? ctx1 : ctx2;
+            data.push(val); data.shift(); ctx.clearRect(0,0,300,100); ctx.beginPath(); ctx.strokeStyle='#0f0'; ctx.lineWidth=2;
+            let max = Math.max(...data, 10);
+            data.forEach((v,i) => { let y = 100 - (v/max)*90; i==0 ? ctx.moveTo(i*6, y) : ctx.lineTo(i*6, y); }); ctx.stroke();
+        }
+        function resetChart(id) { if(id===1) chartData1.fill(0); else chartData2.fill(0); }
+
+        document.getElementById('nav-live').addEventListener('click', () => { mode = 'LIVE'; });
+        document.getElementById('nav-dash').addEventListener('click', () => { mode = 'DASH'; });
+        document.getElementById('nav-dtc').addEventListener('click', () => { mode = 'DTC'; });
+        document.getElementById('nav-school').addEventListener('click', () => { mode = 'SCHOOL'; });
+        document.getElementById('btnReadDTC').addEventListener('click', async () => { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ LEYENDO..."; await wait(1000); send("03"); });
+        document.getElementById('btnEraseDTC').addEventListener('click', async () => { if(confirm("¿BORRAR?")) { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ BORRANDO..."; await wait(1000); send("04"); } });
+
+        const dbDiag = [{ nombre: "PINOUT CHEVY C2", archivo: "IMG_20260207_010441.jpg" }];
+        const diagList = document.getElementById('diagList');
+        function renderDiag() { diagList.innerHTML=""; dbDiag.forEach(d=>{ diagList.innerHTML+=`<div class="diag-card"><span style="color:#fff">${d.nombre}</span><button class="btn-mini" onclick="document.getElementById('modalImg').src='${d.archivo}';document.getElementById('imgModal').style.display='flex'">VER</button></div>`}); }
+        renderDiag();
+        function buscarManual() { let c=document.getElementById('autoInput').value; if(c) window.open('https://www.google.com/search?q=filetype:pdf+diagrama+electrico+taller+' + c, '_blank'); }
+        function closeImg() { document.getElementById('imgModal').style.display = "none"; }
+    </script>
+</body>
+</html>
