@@ -2,27 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V117 - CONEXIÓN FUERTE</title>
+    <title>PROPART V118 - HÍBRIDO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         /* --- ESTILO VISUAL HD (ANTI-REFLEJO) --- */
         body { 
-            background: #1a1a1a; 
+            background: #1a1a1a; /* GRIS MATE */
             color: #ffffff; 
             font-family: Arial, sans-serif; 
             text-align: center; 
-            margin: 0; 
-            padding-bottom: 90px; 
-            overflow-x: hidden; 
+            margin: 0; padding-bottom: 90px; overflow-x: hidden; 
         }
-
         h2 { font-size: 28px; margin: 15px 0; border-bottom: 2px solid #555; padding-bottom: 10px; }
         
         /* BOTONES GIGANTES */
         .btn-action { 
             background: #ff9800; color: #000; padding: 25px; width: 95%; 
-            font-weight: 900; border-radius: 15px; font-size: 24px; 
-            border: none; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer;
+            font-weight: 900; border-radius: 15px; font-size: 24px; border: none; 
+            margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer;
         }
         .btn-action:active { transform: scale(0.98); background: #e68900; }
         .btn-blue { background: #2196F3; color: white; }
@@ -40,7 +37,8 @@
         .gauge-row { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
         .gauge { width: 110px; height: 110px; border: 4px solid #2196F3; border-radius: 50%; background: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .gauge h1 { font-size: 30px; margin: 0; color: #fff; }
-        
+        .gauge span { font-size: 14px; color: #ccc; }
+
         /* DIAGRAMAS */
         .modelo-item { background: #333; padding: 20px; margin: 5px; border-radius: 8px; font-size: 18px; text-align: left; border-left: 5px solid #ff9800; }
         .pinout-box { background: #fff; padding: 10px; border-radius: 10px; overflow-x: auto; }
@@ -67,17 +65,12 @@
 
     <div id="p-dash" class="page">
         <h2>🏎️ TABLERO</h2>
-        
-        <div id="status" style="font-size:20px; color:#aaa; margin-bottom:20px; border:1px solid #555; padding:10px; border-radius:10px;">
-            Estado: 🔴 Desconectado
-        </div>
-        
+        <div id="status" style="font-size:16px; color:#aaa; margin-bottom:20px;">Estado: Desconectado</div>
         <div class="gauge-row">
             <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
             <div class="gauge"><span>KM/H</span><h1 id="speedVal">0</h1></div>
             <div class="gauge"><span>TEMP</span><h1 id="tempVal">--</h1></div>
         </div>
-
         <button id="btnConnect" class="btn-action">🔌 CONECTAR</button>
         <div style="font-size:18px; margin-top:20px; color:#ccc;">👇 Usa el menú de abajo</div>
     </div>
@@ -184,59 +177,33 @@
         function nav(p) { document.querySelectorAll('.page').forEach(x => x.style.display='none'); document.querySelectorAll('nav button').forEach(x => x.classList.remove('active')); document.getElementById(p).style.display='block'; document.getElementById('nav-'+p.split('-')[1]).classList.add('active'); if(p!=='p-live'){chartData1.fill(0); chartData2.fill(0);} }
         nav('p-dash');
 
-        // === CONEXIÓN ROBUSTA V117 ===
-        // Se agregaron más UUIDs para escáneres clones y retrasos de seguridad
-        const UUIDS = [
-            '000018f0-0000-1000-8000-00805f9b34fb', 
-            '0000fff0-0000-1000-8000-00805f9b34fb',
-            '0000ffe0-0000-1000-8000-00805f9b34fb' // Extra para clones raros
-        ];
+        // === BLUETOOTH CORE ORIGINAL (V112) ===
+        // Regresamos a los 2 UUIDs básicos que sí te funcionaban
+        const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let service, writeChar, notifyChar, loop, mode = 'DASH', busy = false, lastT = 0;
         const ctx1 = document.getElementById('chart1').getContext('2d');
         const ctx2 = document.getElementById('chart2').getContext('2d');
         let chartData1 = new Array(50).fill(0); let chartData2 = new Array(50).fill(0);
 
-        function updateStatus(msg, color="#aaa") {
-            const el = document.getElementById('status');
-            el.innerHTML = "Estado: " + msg;
-            el.style.color = color;
-            el.style.borderColor = color;
-        }
-
         document.getElementById('btnConnect').addEventListener('click', async () => {
             try {
-                updateStatus("🔍 BUSCANDO...", "#ff9800");
-                const d = await navigator.bluetooth.requestDevice({ 
-                    acceptAllDevices: true, 
-                    optionalServices: UUIDS 
-                });
-                
-                updateStatus("🔗 VINCULANDO...", "#2196F3");
+                document.getElementById('status').innerText="Estado: Buscando...";
+                const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS });
                 const s = await d.gatt.connect();
-                
-                updateStatus("📡 BUSCANDO SERVICIO...", "#2196F3");
                 for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} }
-                
-                if(!service) throw "No se halló servicio OBD";
-
                 const c = await service.getCharacteristics();
                 for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; }
-                
                 await notifyChar.startNotifications();
                 notifyChar.addEventListener('characteristicvaluechanged', handleData);
-                
-                updateStatus("🟢 CONECTADO", "#4CAF50");
+                document.getElementById('status').innerText="Estado: ✅ CONECTADO";
                 document.getElementById('btnConnect').style.display='none';
                 
-                // INICIALIZACIÓN LENTA (800ms) PARA CLONES LENTOS
-                await send("AT Z"); await wait(800); 
-                await send("AT SP0"); await wait(800); 
-                await send("AT E0"); await wait(800);
+                // INICIO ESTÁNDAR (EL QUE SÍ JALABA)
+                await send("AT Z"); await wait(500); 
+                await send("AT SP0"); await wait(500); 
+                await send("AT E0"); await wait(500);
                 startLoop();
-            } catch(e){ 
-                updateStatus("❌ ERROR: " + e, "#F44336");
-                alert("Error: " + e + "\n\nRECUERDA: Desconecta y vuelve a conectar el escáner si falla."); 
-            }
+            } catch(e){ alert("Error: " + e); }
         });
 
         async function startLoop() {
@@ -294,4 +261,4 @@
         document.getElementById('btnEraseDTC').addEventListener('click', async () => { if(confirm("¿BORRAR?")) { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ BORRANDO..."; await wait(1000); send("04"); } });
     </script>
 </body>
-        </html>
+</html>
