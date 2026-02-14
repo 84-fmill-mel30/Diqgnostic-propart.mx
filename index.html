@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>PROPART V116 - VISIÓN HD</title>
+    <title>PROPART V117 - CONEXIÓN FUERTE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        /* --- ESTILO VISUAL NUEVO (ANTI-REFLEJO) --- */
+        /* --- ESTILO VISUAL HD (ANTI-REFLEJO) --- */
         body { 
-            background: #1a1a1a; /* GRIS MATE (Menos reflejo) */
+            background: #1a1a1a; 
             color: #ffffff; 
-            font-family: Arial, sans-serif; /* Letra fácil de leer */
+            font-family: Arial, sans-serif; 
             text-align: center; 
             margin: 0; 
             padding-bottom: 90px; 
@@ -20,85 +20,41 @@
         
         /* BOTONES GIGANTES */
         .btn-action { 
-            background: #ff9800; /* NARANJA VISIBLE */
-            color: #000; 
-            padding: 25px; /* MUY GRANDE */
-            width: 95%; 
-            font-weight: 900; 
-            border-radius: 15px; 
-            font-size: 24px; 
-            border: none; 
-            margin: 15px 0; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-            cursor: pointer;
+            background: #ff9800; color: #000; padding: 25px; width: 95%; 
+            font-weight: 900; border-radius: 15px; font-size: 24px; 
+            border: none; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer;
         }
         .btn-action:active { transform: scale(0.98); background: #e68900; }
-        
-        .btn-blue { background: #2196F3; color: white; } /* AZUL FUERTE */
-        .btn-red { background: #F44336; color: white; } /* ROJO ALERTA */
+        .btn-blue { background: #2196F3; color: white; }
+        .btn-red { background: #F44336; color: white; }
 
-        /* INPUTS GRANDES */
-        input, select { 
-            width: 90%; 
-            padding: 15px; 
-            font-size: 20px; 
-            border-radius: 8px; 
-            border: 2px solid #777; 
-            background: #333; 
-            color: #fff; 
-            margin-bottom: 10px;
-        }
+        /* INPUTS */
+        input, select { width: 90%; padding: 15px; font-size: 20px; border-radius: 8px; border: 2px solid #777; background: #333; color: #fff; margin-bottom: 10px; }
 
-        /* NAVEGACIÓN GRANDE */
-        nav { 
-            position: fixed; bottom: 0; width: 100%; 
-            background: #222; border-top: 3px solid #555; 
-            display: flex; justify-content: space-around; padding: 15px 0; 
-            z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
-        }
+        /* NAV */
+        nav { position: fixed; bottom: 0; width: 100%; background: #222; border-top: 3px solid #555; display: flex; justify-content: space-around; padding: 15px 0; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
         nav button { background: none; border: none; font-size: 35px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; }
         nav button.active { filter: grayscale(0%); transform: scale(1.2); }
 
         /* TABLERO */
         .gauge-row { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
-        .gauge { 
-            width: 110px; height: 110px; 
-            border: 4px solid #2196F3; border-radius: 50%; 
-            background: #111;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-        }
+        .gauge { width: 110px; height: 110px; border: 4px solid #2196F3; border-radius: 50%; background: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .gauge h1 { font-size: 30px; margin: 0; color: #fff; }
-        .gauge span { font-size: 14px; color: #ccc; }
-
-        /* LISTAS Y TEXTOS */
-        .modelo-item { 
-            background: #333; padding: 20px; margin: 5px; 
-            border-radius: 8px; font-size: 18px; text-align: left; 
-            border-left: 5px solid #ff9800;
-        }
         
-        /* PINOUT VISUAL */
-        .pinout-box { background: #fff; padding: 10px; border-radius: 10px; overflow-x: auto; } /* FONDO BLANCO PARA CONTRASTE */
+        /* DIAGRAMAS */
+        .modelo-item { background: #333; padding: 20px; margin: 5px; border-radius: 8px; font-size: 18px; text-align: left; border-left: 5px solid #ff9800; }
+        .pinout-box { background: #fff; padding: 10px; border-radius: 10px; overflow-x: auto; }
         svg { background: #eee; border: 2px solid #999; }
         .pin-text { fill: #000; font-weight: bold; font-size: 11px; }
+        #pinInfo { background: #222; border: 3px solid #fff; padding: 20px; margin-top: 20px; border-radius: 15px; font-size: 22px; text-align: left; display: none; }
 
-        /* INFO BOX */
-        #pinInfo { 
-            background: #222; border: 3px solid #fff; 
-            padding: 20px; margin-top: 20px; border-radius: 15px; 
-            font-size: 22px; text-align: left; display: none;
-        }
-
-        /* ESCUELA */
+        /* OTROS */
         details { background: #333; margin-bottom: 15px; border-radius: 10px; padding: 5px; }
         summary { padding: 20px; font-size: 20px; font-weight: bold; list-style: none; display: flex; justify-content: space-between; }
         .lesson-content { padding: 20px; font-size: 18px; line-height: 1.5; background: #222; color: #ddd; }
-
-        /* PÁGINAS */
         .page { display: none; padding: 10px; padding-bottom: 110px; }
         .page.active { display: block; }
         
-        /* BLOQUEO */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         #legalModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .legal-box { border: 2px solid #fff; padding: 30px; border-radius: 20px; background: #222; font-size: 18px; }
@@ -111,7 +67,10 @@
 
     <div id="p-dash" class="page">
         <h2>🏎️ TABLERO</h2>
-        <div id="status" style="font-size:16px; color:#aaa; margin-bottom:20px;">Estado: Desconectado</div>
+        
+        <div id="status" style="font-size:20px; color:#aaa; margin-bottom:20px; border:1px solid #555; padding:10px; border-radius:10px;">
+            Estado: 🔴 Desconectado
+        </div>
         
         <div class="gauge-row">
             <div class="gauge"><span>RPM</span><h1 id="rpmVal">0</h1></div>
@@ -120,25 +79,17 @@
         </div>
 
         <button id="btnConnect" class="btn-action">🔌 CONECTAR</button>
-        <div style="font-size:18px; margin-top:20px; color:#ccc;">
-            👇 Usa el menú de abajo para navegar
-        </div>
+        <div style="font-size:18px; margin-top:20px; color:#ccc;">👇 Usa el menú de abajo</div>
     </div>
 
     <div id="p-diag" class="page">
         <h2>📂 DIAGRAMAS</h2>
-        
         <input type="text" id="buscadorModelos" placeholder="🔍 BUSCAR AUTO..." onkeyup="filtrarModelos()">
-        
         <div id="listaModelos"></div>
-
         <div id="pinoutContainer" style="display:none;">
             <h3 id="ecuTitle" style="color:#2196F3;">CONECTOR</h3>
-            <div class="pinout-box">
-                <div id="svgCanvas"></div>
-            </div>
+            <div class="pinout-box"><div id="svgCanvas"></div></div>
         </div>
-
         <div id="pinInfo">
             <div id="pinNum" style="color:#ff9800; font-weight:900;">PIN X</div>
             <div id="pinFunc" style="color:#fff; margin-top:10px;">FUNCIÓN...</div>
@@ -153,7 +104,6 @@
             <span id="val1" style="font-size:30px; font-weight:bold; color:#ff9800; display:block; text-align:right;">0</span>
             <canvas id="chart1" style="background:#111; border:1px solid #555; width:100%; height:120px;"></canvas>
         </div>
-        
         <div style="background:#222; padding:10px; border-radius:10px;">
             <select id="sel2" onchange="resetChart(2)"><option value="0111">TPS %</option><option value="010D">VELOCIDAD</option><option value="0114">O2 SENSOR</option></select>
             <span id="val2" style="font-size:30px; font-weight:bold; color:#2196F3; display:block; text-align:right;">0</span>
@@ -165,17 +115,14 @@
         <h2>💀 CÓDIGOS DE FALLA</h2>
         <button id="btnReadDTC" class="btn-action btn-blue">🔍 LEER CÓDIGOS</button>
         <button id="btnEraseDTC" class="btn-action btn-red">🧹 BORRAR TODO</button>
-        
-        <div id="dtcLog" style="background:#333; color:#fff; padding:20px; min-height:100px; border-radius:10px; margin-top:20px; font-size:20px; text-align:left;">
-            Esperando lectura...
-        </div>
+        <div id="dtcLog" style="background:#333; color:#fff; padding:20px; min-height:100px; border-radius:10px; margin-top:20px; font-size:20px; text-align:left;">Esperando lectura...</div>
     </div>
 
     <div id="p-school" class="page">
         <h2>🎓 MANUAL TÉCNICO</h2>
-        <details><summary>⚡ CAP 1: ELECTRICIDAD</summary><div class="lesson-content">Voltaje es Presión.<br>Amperaje es Caudal.<br>Resistencia es Tapón.<br><br>Siempre checa tierras antes de cambiar piezas.</div></details>
-        <details><summary>🧠 CAP 2: ECU INTERNA</summary><div class="lesson-content">Drivers: Activan bobinas.<br>Capacitores: Filtran corriente.<br>Reguladores: Bajan 12v a 5v.</div></details>
-        <details><summary>💾 CAP 3: MEMORIAS</summary><div class="lesson-content">Usa la pinza roja en el PIN 1 (El del puntito).<br>Limpia el barniz de las patas antes de leer.</div></details>
+        <details><summary>⚡ CAP 1: ELECTRICIDAD</summary><div class="lesson-content">Voltaje = Presión. Amperaje = Caudal. Resistencia = Tapón.</div></details>
+        <details><summary>🧠 CAP 2: ECU INTERNA</summary><div class="lesson-content">Drivers (Músculo), Memorias (Cerebro), Capacitores (Filtros).</div></details>
+        <details><summary>💾 CAP 3: MEMORIAS</summary><div class="lesson-content">Pinza roja al PIN 1 (Muesca). Raspar patas para contacto.</div></details>
     </div>
 
     <nav>
@@ -187,7 +134,7 @@
     </nav>
 
     <script>
-        // === BASE DE DATOS (IGUAL QUE V115) ===
+        // === DB DIAGRAMAS ===
         const DB_PINOUTS = [
             { id: "VW_JETTA_A4", marca: "VW", modelo: "JETTA A4 (121 PINES)", ecu: "BOSCH ME7.5", pines: 121, data: [{p:1,f:"TIERRA",c:"#000"},{p:2,f:"TIERRA",c:"#000"},{p:3,f:"IGNICION",c:"#000"},{p:62,f:"BATERIA (30)",c:"#F44336"},{p:118,f:"5V SENSORES",c:"#FF9800"}] },
             { id: "NISSAN_TSURU", marca: "NISSAN", modelo: "TSURU III 16V", ecu: "JECS 64 PINES", pines: 64, data: [{p:36,f:"IGNICION",c:"#fff"},{p:107,f:"TIERRA",c:"#000"},{p:4,f:"BOMBA GAS",c:"#4CAF50"}] },
@@ -204,7 +151,6 @@
                 lista.innerHTML += `<div class="modelo-item" onclick="seleccionarModelo('${item.id}')"><b>${item.marca}</b><br>${item.modelo}</div>`;
             });
         }
-
         function seleccionarModelo(id) {
             document.getElementById('listaModelos').innerHTML = "";
             document.getElementById('buscadorModelos').value = "";
@@ -212,68 +158,85 @@
             document.getElementById('pinoutContainer').style.display = "block";
             document.getElementById('ecuTitle').innerText = d.modelo;
             document.getElementById('pinInfo').style.display = "none";
-            
             let canvas = document.getElementById('svgCanvas');
-            let cols = d.pines > 60 ? 20 : 16;
-            let rows = Math.ceil(d.pines / cols);
+            let cols = d.pines > 60 ? 20 : 16; let rows = Math.ceil(d.pines / cols);
             let w = cols * 25 + 20; let h = rows * 30 + 20;
-            
             let html = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
             for(let i=1; i<=d.pines; i++) {
-                let col = (i-1)%cols; let row = Math.ceil(i/cols)-1;
-                let x = col*25+10; let y = row*30+10;
+                let col = (i-1)%cols; let row = Math.ceil(i/cols)-1; let x = col*25+10; let y = row*30+10;
                 let info = d.data.find(k => k.p === i);
-                let color = info ? info.c : "#ddd"; // Gris claro base
-                let stroke = info ? "#000" : "#999";
-                let op = info ? 1 : 0.5;
-                let evt = info ? `onclick="verPin('${id}',${i})"` : "";
-                let cursor = info ? "pointer" : "default";
-                
+                let color = info ? info.c : "#ddd"; let stroke = info ? "#000" : "#999"; let op = info ? 1 : 0.5; let evt = info ? `onclick="verPin('${id}',${i})"` : ""; let cursor = info ? "pointer" : "default";
                 html += `<rect x="${x}" y="${y}" width="20" height="20" fill="${color}" stroke="${stroke}" stroke-width="1" style="opacity:${op}; cursor:${cursor}" ${evt}/><text x="${x+10}" y="${y+14}" class="pin-text">${i}</text>`;
             }
-            html += `</svg>`;
-            canvas.innerHTML = html;
+            html += `</svg>`; canvas.innerHTML = html;
         }
-
         window.verPin = function(id, p) {
             let d = DB_PINOUTS.find(x => x.id === id).data.find(k => k.p === p);
-            document.getElementById('pinInfo').style.display = "block";
-            document.getElementById('pinInfo').style.borderColor = d.c;
-            document.getElementById('pinNum').innerText = "PIN " + p;
-            document.getElementById('pinNum').style.color = d.c;
-            document.getElementById('pinFunc').innerText = d.f;
-            document.getElementById('pinColor').innerText = "Color ref: " + d.c;
+            document.getElementById('pinInfo').style.display = "block"; document.getElementById('pinInfo').style.borderColor = d.c;
+            document.getElementById('pinNum').innerText = "PIN " + p; document.getElementById('pinNum').style.color = d.c;
+            document.getElementById('pinFunc').innerText = d.f; document.getElementById('pinColor').innerText = "Color ref: " + d.c;
         }
 
-        // NAVIGATION & LEGAL
+        // NAV & LEGAL
         const fechaVencimiento = new Date(2026, 2, 1);
         if (new Date() > fechaVencimiento) document.getElementById('lockScreen').style.display = 'flex';
         function acceptLegal() { document.getElementById('legalModal').style.display = 'none'; }
         function nav(p) { document.querySelectorAll('.page').forEach(x => x.style.display='none'); document.querySelectorAll('nav button').forEach(x => x.classList.remove('active')); document.getElementById(p).style.display='block'; document.getElementById('nav-'+p.split('-')[1]).classList.add('active'); if(p!=='p-live'){chartData1.fill(0); chartData2.fill(0);} }
         nav('p-dash');
 
-        // BLUETOOTH CORE (Manteniendo la lógica robusta V115)
-        const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
+        // === CONEXIÓN ROBUSTA V117 ===
+        // Se agregaron más UUIDs para escáneres clones y retrasos de seguridad
+        const UUIDS = [
+            '000018f0-0000-1000-8000-00805f9b34fb', 
+            '0000fff0-0000-1000-8000-00805f9b34fb',
+            '0000ffe0-0000-1000-8000-00805f9b34fb' // Extra para clones raros
+        ];
         let service, writeChar, notifyChar, loop, mode = 'DASH', busy = false, lastT = 0;
         const ctx1 = document.getElementById('chart1').getContext('2d');
         const ctx2 = document.getElementById('chart2').getContext('2d');
         let chartData1 = new Array(50).fill(0); let chartData2 = new Array(50).fill(0);
 
+        function updateStatus(msg, color="#aaa") {
+            const el = document.getElementById('status');
+            el.innerHTML = "Estado: " + msg;
+            el.style.color = color;
+            el.style.borderColor = color;
+        }
+
         document.getElementById('btnConnect').addEventListener('click', async () => {
             try {
-                document.getElementById('status').innerText="Conectando...";
-                const d = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: UUIDS });
+                updateStatus("🔍 BUSCANDO...", "#ff9800");
+                const d = await navigator.bluetooth.requestDevice({ 
+                    acceptAllDevices: true, 
+                    optionalServices: UUIDS 
+                });
+                
+                updateStatus("🔗 VINCULANDO...", "#2196F3");
                 const s = await d.gatt.connect();
+                
+                updateStatus("📡 BUSCANDO SERVICIO...", "#2196F3");
                 for (let u of UUIDS) { try { service = await s.getPrimaryService(u); break; } catch(e){} }
+                
+                if(!service) throw "No se halló servicio OBD";
+
                 const c = await service.getCharacteristics();
                 for (let x of c) { if (x.properties.write) writeChar = x; if (x.properties.notify) notifyChar = x; }
+                
                 await notifyChar.startNotifications();
                 notifyChar.addEventListener('characteristicvaluechanged', handleData);
-                document.getElementById('status').innerText="✅ CONECTADO";
+                
+                updateStatus("🟢 CONECTADO", "#4CAF50");
                 document.getElementById('btnConnect').style.display='none';
-                await send("AT Z"); await wait(500); await send("AT SP0"); await wait(500); await send("AT E0"); await wait(500);
+                
+                // INICIALIZACIÓN LENTA (800ms) PARA CLONES LENTOS
+                await send("AT Z"); await wait(800); 
+                await send("AT SP0"); await wait(800); 
+                await send("AT E0"); await wait(800);
                 startLoop();
-            } catch(e){ alert("Error: " + e); }
+            } catch(e){ 
+                updateStatus("❌ ERROR: " + e, "#F44336");
+                alert("Error: " + e + "\n\nRECUERDA: Desconecta y vuelve a conectar el escáner si falla."); 
+            }
         });
 
         async function startLoop() {
@@ -331,4 +294,4 @@
         document.getElementById('btnEraseDTC').addEventListener('click', async () => { if(confirm("¿BORRAR?")) { mode = 'DTC'; document.getElementById('dtcLog').innerText = "⏳ BORRANDO..."; await wait(1000); send("04"); } });
     </script>
 </body>
-</html>
+        </html>
